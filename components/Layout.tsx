@@ -6,6 +6,7 @@ import MobileNav from 'components/MobileNav';
 
 import METADATA from 'constants/METADATA';
 import NAV_LINK from 'constants/NAV_LINK';
+import Social from './Social';
 
 type Props = {
   children: React.ReactNode;
@@ -26,7 +27,7 @@ const Layout = ({ children }: Props) => {
                 <Link
                   href={link.href}
                   key={link.title}
-                  className="font-medium text-gray-900 dark:text-gray-100 sm:p-4"
+                  className="font-medium hover:underline sm:p-4"
                 >
                   {link.title}
                 </Link>
@@ -36,7 +37,25 @@ const Layout = ({ children }: Props) => {
             <MobileNav />
           </div>
         </header>
+
         <main className="mb-auto">{children}</main>
+
+        <footer className="flex flex-col items-center py-10">
+          <div className="flex gap-5 mb-3 text-sm font-semibold underline">
+            <Social socialName="EMAIL" href={`mailto:${METADATA.social.email}`} />
+            <Social socialName="GitHub" href={METADATA.social.github} />
+            <Social socialName="NotionWiki" href={METADATA.social.notion} />
+          </div>
+
+          <div className="mb-4 text-gray-400">
+            <span>{`${METADATA.author} • © ${new Date().getFullYear()} • `}</span>
+            <Link href="/">{METADATA.meta.title}</Link>
+          </div>
+
+          <div className="text-sm text-gray-400">
+            <a href="https://github.com/devyouth94/dev-blog">GitHub Repository</a>
+          </div>
+        </footer>
       </div>
     </div>
   );
