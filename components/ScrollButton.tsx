@@ -30,8 +30,8 @@ const ScrollButton = () => {
 
   return (
     <div
-      className={`fixed right-14 bottom-14 hidden flex-col gap-3 ${
-        isShow ? 'md:flex' : 'md:hidden'
+      className={`fixed right-5 md:right-14 duration-150 bottom-14 flex-col gap-3 ${
+        isShow ? 'flex' : 'hidden'
       }`}
     >
       <button type="button" onClick={handleScrollComment} className="scroll-button">

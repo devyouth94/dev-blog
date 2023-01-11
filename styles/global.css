@@ -12,11 +12,11 @@
   }
 
   .toc-h2 {
-    @apply ml-3 pl-2 border-l border-gray-300;
+    @apply ml-2 pl-2 border-l border-gray-300;
   }
 
   .toc-h3 {
-    @apply ml-3 pl-5 border-l border-gray-300;
+    @apply ml-2 pl-4 border-l border-gray-300;
   }
 }
 
@@ -34,4 +34,32 @@ body::-webkit-scrollbar-thumb {
   --tw-bg-opacity: 1;
   background-color: rgb(168 162 158 / var(--tw-bg-opacity));
   border-radius: 0.25rem;
+}
+
+.hljs-keyword,
+.hljs-tag {
+  color: #9bdafa;
+}
+
+.hljs-attr {
+  color: #9f7cbd;
+}
+
+.hljs-title + .function_,
+.function_ {
+  color: #84a1ed;
+}
+
+.hljs-tag > .hljs-name,
+.class_,
+.hljs-params {
+  color: #e0787b;
+}
+
+.hljs-string {
+  color: #cae797;
+}
+
+.hljs-comment {
+  color: #aaa;
 }

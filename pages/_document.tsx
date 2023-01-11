@@ -9,7 +9,7 @@ export default function Document() {
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000" />
       </Head>
 
-      <body className="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-200">
+      <body className="bg-gray-50 text-gray-900 dark:bg-neutral-800 dark:text-gray-100">
         <Main />
         <NextScript />
       </body>

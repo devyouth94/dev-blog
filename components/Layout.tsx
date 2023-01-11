@@ -16,7 +16,7 @@ const Layout = ({ children }: Props) => {
   return (
     <div className="mx-auto max-w-3xl px-5">
       <div className="flex h-screen flex-col justify-between">
-        <header className="flex items-center justify-between py-10">
+        <header className="flex items-center justify-between py-7">
           <Link href="/" className="text-2xl font-bold">
             {METADATA.headerTitle}
           </Link>
@@ -38,7 +38,7 @@ const Layout = ({ children }: Props) => {
           </div>
         </header>
 
-        <main className="mb-auto">{children}</main>
+        <main className="mb-auto pt-5">{children}</main>
 
         <footer className="flex flex-col items-center py-10 text-sm">
           <div className="flex gap-5 mb-3  font-semibold underline">

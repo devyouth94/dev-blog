@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 
 const Toc = () => {
-  const { pathname } = useRouter();
+  const router = useRouter();
 
   const [currentId, setCurrentId] = useState('');
   const [headEls, setHeadEls] = useState<Element[]>([]);
@@ -17,17 +17,17 @@ const Toc = () => {
     els.map((heading) => {
       observer.observe(heading);
     });
-  }, [pathname]);
+  }, [router]);
 
   return (
     <div className="absolute top-0 left-full h-full hidden xl:block">
-      <div className="fixed pl-[60px] pr-10">
+      <div className="fixed pl-[50px] pr-10">
         {headEls.map((head, idx) => (
           <div
             key={idx}
-            className={`py-[2.5px] ${
+            className={`py-[2.5px] text-sm ${
               head.nodeName === 'H1' ? 'toc-h1' : head.nodeName === 'H2' ? 'toc-h2' : 'toc-h3'
-            } ${currentId === head.id ? 'text-orange-500' : 'text-gray-500'}`}
+            } ${currentId === head.id ? 'text-orange-500' : 'text-gray-500 dark:text-gray-100'}`}
           >
             <a href={`#${head.id}`}>
               {head.nodeName === 'H3' && '• '}
