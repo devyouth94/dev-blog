@@ -9,7 +9,7 @@ const MobileNav = () => {
   const handleClickToggle = () => {
     setIsShow((prev) => {
       if (prev) {
-        document.body.style.overflow = 'auto';
+        document.body.style.overflow = 'overlay';
       } else {
         document.body.style.overflow = 'hidden';
       }
