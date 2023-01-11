@@ -1,0 +1,159 @@
+---
+title: 리액트 최적화 하기
+date: 2022-12-26
+summary: React.Memo를 사용하여 어떻게 최적화를 시킬수 있을까?
+tags: ['react', '최적화', 'react.memo']
+---
+
+리액트를 사용하는 개발자가 할 수 있는 최적화엔 무엇이 있을까? 바로 `기존 컴포넌트의 UI를 재사용할 지 확인하는 부분`과 `새로운 Virtual DOM을 생성하는 부분`이다.
+
+`기존 컴포넌트의 UI를 재사용할 지 확인하는 부분` 의 경우는 리렌더링이 될 컴포넌트의 UI가 이전의 UI와 동일하다고 판단되는 경우 새롭게 컴포넌트 함수를 호출하지 않고 이전의 결과값을 그대로 사용하도록 함으로 최적화를 수행한다.
+
+`새로운 Virtual DOM을 생성하는 부분` 의 경우는 컴포넌트 함수가 호출되면서 만들어질 Virtual DOM의 형태를 비교적 차이가 적은 형태로 만들어지도록 하는 것이다.
+
+# React.Memo
+
+리액트는 state가 변할 경우 해당 컴포넌트와 하위의 컴포넌트 모두 리렌더링을 한다. 그런데 state가 변한 컴포넌트의 경우 당연히 UI의 변화가 있을 것이기에 리렌더링을 해야 하지만, 하위 컴포넌트의 경우에는 props가 변하지 않았다면 해당 하위 컴포넌트는 변화가 없을 수도 있다. 이런 경우에는 굳이 새로운 컴포넌트 함수를 호출할 필요 없이 이전에 저장되어 있던 결과를 그대로 사용하는 것이 효과적이다.
+
+하지만 UI가 변화했는지 매번 리액트가 렌더링 과정에서 모든 컴포넌트 트리를 순회하면서 검사하는 것은 비효율적이다. 그래서 리액트에서는 컴포넌트가 리렌더링 되어야 할 필요가 있는지 판단할 수 있는 `React.memo` 함수를 제공해준다.
+
+## React.Memo()란?
+
+React.Memo는 고차 컴포넌트(HOC, Higher-Order Component)이다. 컴포넌트를 인자로 받아, 컴포넌트들 리턴해준다.
+
+```jsx
+export function Movie({ title, releaseDate }) {
+  return (
+    <div>
+      <div>Movie title: {title}</div>
+      <div>Release date: {releaseDate}</div>
+    </div>
+  );
+}
+
+export const MemoizedMovie = React.memo(Movie);
+```
+
+`MemoizedMovie` 의 렌더링 결과는 메모이징 되어있다. 만약 `title`이나 `releaseDate` 같은 `props`가 변경 되지 않는다면 다음 렌더링 때 메모이징 된 내용을 그대로 사용하게 된다.
+
+메모이징 한 결과를 재사용 함으로써, 리액트에서 리렌더링을 할 때 가상 DOM에서 달라진 부분을 확인하지 않아 성능상의 이점을 누릴 수 있다.
+
+```jsx
+// 첫 렌더이다. React는 MemoizedMovie 함수를 호출한다.
+<MemoizedMovie
+  movieTitle="Heat"
+  releaseDate="December 15, 1995"
+/>
+
+// 다시 렌더링 할 때 React는 MemoizedMovie 함수를 호출하지 않는다.
+// 리렌더링을 막는다.
+<MemoizedMovie
+  movieTitle="Heat"
+  releaseDate="December 15, 1995"
+/>
+```
+
+React.Memo는 props 혹은 props의 객체를 비교할 때 얕은(shallow) 비교를 한다. 비교 방식을 수정하고 싶다면 `React.Memo()` 두 번째 매개변수로 비교함수를 만들어 넘겨주면 된다.
+
+```jsx
+function moviePropsAreEqual(prevMovie, nextMovie) {
+  return prevMovie.title === nextMovie.title && prevMovie.releaseDate === nextMovie.releaseDate;
+}
+
+const MemoizedMovie2 = React.memo(Movie, moviePropsAreEqual);
+```
+
+`moviePropsAreEqual()`함수는 이전 `props`와 현재 `props`가 같다면 `true`를 반환할 것이다.
+
+### Props로 콜백 함수가 넘어가는 경우
+
+함수 객체는 일반 객체와 동일한 비교 원칙을 따른다. 함수 객체는 오직 자신에게만 동일하다.
+
+그렇기 때문에 부모 컴포넌트가 자식 컴포넌트의 콜백 함수를 정의한다면, 새 함수가 암시적으로 생성될 수 있다. 이것이 메모이제이션을 막을 수 있다.
+
+```jsx
+function Logout({ username, onLogout }) {
+  //부모 컴포넌트로부터 onLogout이라는 콜백 함수를 props로 받는다.
+  return <div onClick={onLogout}>Logout {username}</div>;
+}
+
+const MemoizedLogout = React.memo(Logout);
+```
+
+이 경우 리렌더링이 될 때 마다 부모 함수가 다른 콜백 함수의 인스턴스를 넘길 가능성이 있다.
+
+```jsx
+function MyApp({ store, cookies }) {
+  return (
+    <div className="main">
+      <header>
+        <MemoizedLogout username={store.username} onLogout={() => cookies.clear()} />
+      </header>
+      {store.content}
+    </div>
+  );
+}
+```
+
+메모이징 된 컴포넌트에 동일한 `username`값이 넘어가더라도 `onLogout` 콜백 때문에 리렌더링을 하게 된다. 그렇기 때문에 콜백 인스턴스를 보존시켜줄 수 있는 `useCallback()`을 사용해줘야 한다.
+
+```jsx
+const MemoizedLogout = React.memo(Logout);
+
+function MyApp({ store, cookies }) {
+  const onLogout = useCallback(() => {
+    cookies.clear();
+  }, []);
+  return (
+    <div className="main">
+      <header>
+        <MemoizedLogout username={store.username} onLogout={onLogout} />
+      </header>
+      {store.content}
+    </div>
+  );
+}
+```
+
+메모이제이션 된 콜백 함수는 항상 같은 함수 인스턴스를 반환한다. 이렇게 해준다면 메모이제이션이 정상적으로 동작할 것이다.
+
+## React.Memo()를 언제 사용할까?
+
+`React.Memo()` 는 함수형 컴포넌트에 적용되어 같은 props에 같은 렌더링 결과를 제공하기 때문에, 사용하기 가장 좋은 케이스는 함수형 컴포넌트가 같은 `props`로 자주 렌더링 될거라 예상될 때다.
+
+여기 `Movie`의 부모 컴포넌트인 실시간으로 업데이트 되는 영화 조회수를 나타내는 `MovieViewsRealtime` 컴포넌트가 있다. 이 애플리케이션은 주기적으로 서버에서 데이터를 폴링해서 `MovieViewsRealtime` 컴포넌트의 `views` 를 업데이트한다.
+
+```jsx
+function MovieViewsRealtime({ title, releaseDate, views }) {
+  return (
+    <div>
+      <Movie title={title} releaseDate={releaseDate} />
+      Movie views: {views}
+    </div>
+  );
+}
+```
+
+`views` 가 새로운 숫자로 업데이트 될 때 마다 `MovieViewsRealtime` 컴포넌트 또한 리렌더링 된다. 이때 `Movie` 컴포넌트 또한 `title`이나 `releaseDate` 값이 바뀌지 않았음에도 불구하고 리렌더링 된다. 이런 경우에 `Movie` 컴포넌트에 메모이제이션을 활용하는 것이 적절한 케이스다.
+
+```jsx
+function MovieViewsRealtime({ title, releaseDate, views }) {
+  return (
+    <div>
+      <MemoizedMovie title={title} releaseDate={releaseDate} />
+      Movie views: {views}
+    </div>
+  );
+}
+```
+
+## React.Memo()를 언제 사용하지 말아야 할까?
+
+위의 상황이 아니라면 사용할 필요가 없을 가능성이 높다. 성능적인 이점을 얻지 못한다면 메모이제이션이 오히려 악영향을 끼칠 수 있다.
+
+렌더링될 때 props가 다른 경우가 대부분인 컴포넌트라면 메모이제이션 기법의 이점을 얻기 힘들다.
+
+1. 이전 props와 다음 props의 동등 비교를 위해 비교 함수를 수행한다.
+2. props가 다른 경우가 대부분이라면 비교 함수는 거의 false를 반환하기 때문에 리액트는 이전 렌더링 내용과 다음 렌더링 내용을 비교할 것이다.
+
+이 경우에는 props 비교가 불필요하게 된다.

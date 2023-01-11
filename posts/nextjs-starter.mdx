@@ -1,0 +1,188 @@
+---
+title: Next.js 프로젝트 설정하기(with TS, ESLint, Prettier, Tailwind css)
+date: 2023-01-11
+summary: next.js로 프로젝트를 시작할때 기초 설정을 어떻게 해야하는지 알아보자.
+tags: ['next.js', 'typescript', 'tailwindcss']
+---
+
+# 1. Next.js 설치 + TS, ESLint
+
+## 참고 사이트
+
+[Create Next App | Next.js](https://nextjs.org/docs/api-reference/create-next-app)
+
+## Get Started
+
+```bash
+npx create-next-app .
+```
+
+- create-next-app 을 사용하여 next.js를 설치한다. 참고로 경로를 `.` 으로 설정하면 현재 디렉토리 내부에 설치하게 된다.
+- 친절하게 프로젝트에 타입스크립트를 사용할거냐고 물어봐준다. 타입스크립트를 사용할 예정이므로 Yes에 두고 `enter` 키를 누르면 된다. 필요한 패키지들을 알아서 설치해준다.
+  ![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/0a40d0b7-926a-4c6d-ae62-25176da6406e/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230111%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230111T084059Z&X-Amz-Expires=86400&X-Amz-Signature=1d5d31a0df998b68223f278a9d72b6f4f00fa4594d9d533adc4428710711eeee&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+- ESLint를 사용할거냐고도 물어보니 필요하다면 꼭 Yes를 선택해주자.
+  ![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/df14ad9a-63f3-4718-8762-7e666766e657/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230111%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230111T084121Z&X-Amz-Expires=86400&X-Amz-Signature=b47e1afc049bd8a40675846f0c17b1505d62161cc1656d6b39f1b46f34cf357f&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+
+# 2. ESLint 설정하기
+
+## 참고사이트
+
+[Getting Started with ESLint - ESLint - Pluggable JavaScript Linter](https://eslint.org/docs/latest/user-guide/getting-started)
+
+[Basic Features: ESLint | Next.js](https://nextjs.org/docs/basic-features/eslint)
+
+## Get Started
+
+```bash
+npx eslint --init
+```
+
+- Next 설치시 `eslint` 초기 설정은 아래와 같다. 위의 명령어를 사용하면 더 자세한 초기 설정을 간편하게 할수 있다.
+  ![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/1e924ad7-8207-454b-83eb-90e4fbdc43a7/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230111%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230111T084140Z&X-Amz-Expires=86400&X-Amz-Signature=0c29198bec2f1f63adf87dc44cb7e468c845df67fa0a665eb05a5cca3effb8c9&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+- 명령어 사용시 `CNA` 를 사용했을때 처럼 각자의 프로젝트에 맞춰서 선택할수 있는 선택지가 주어진다.
+  ![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/fbc52987-279b-4a08-8f80-b96f6e994721/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230111%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230111T084153Z&X-Amz-Expires=86400&X-Amz-Signature=cf01d1f2a183d171f63b10e765aa23798d022957ef90052c8346e2b4e1b2449f&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+- 설정이 잘 완료되었다. 추가로 env에 `"node": true` 를 추가해준다. 추가해주지 않으면 이후에 `CommonJS` 모듈을 사용할수 없다.
+  ![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/ebfc496c-b3fd-4c92-a2a5-717a08d3e0f6/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230111%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230111T084203Z&X-Amz-Expires=86400&X-Amz-Signature=4d8ef59ed4b8189c3735115278ba7f19d01b6b761095e95e27392b4510d6ec2d&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+
+# 3. Prettier 설치 및 설정하기
+
+## 참고사이트
+
+[Basic Features: ESLint | Next.js](https://nextjs.org/docs/basic-features/eslint#prettier)
+
+## Get Started
+
+```bash
+npm install -D prettier eslint-config-prettier
+```
+
+1. `prettier`를 설치하고 `eslint`와 같이 사용할시 충돌이 발생할 수 있으므로 `eslint-config-prettier`를 함께 설치해준다.
+2. 루트 디렉토리에 `.prettierrc`파일을 생성하고 취향에 맞게 `prettier` 설정을 하자.
+
+   ```json
+   //.prettierrc
+
+   {
+     "printWidth": 100, //한줄에 코드 100줄이 넘지 않도록 함.
+     "singleQuote": true, //문자열 사용시 ''사용.
+     "trailingComma": "all", //맨 뒤에 있는 것도 쉼표를 추가함.
+     "tabWidth": 2, //들여쓰기 크기를 2칸으로 함.
+     "bracketSameLine": true // 태그를 같은 줄에 넣음.
+   }
+   ```
+
+3. `.eslintrc`파일 `extends`에 `prettier`를 추가해준다.
+
+   ```json
+   {
+   	"extends": [
+       "eslint:recommended",
+       "plugin:react/recommended",
+       "plugin:@typescript-eslint/recommended",
+       "prettier" <- 추가
+     ],
+   }
+   ```
+
+# 4. Tailwind css 설치
+
+## 참고 사이트
+
+[Install Tailwind CSS with Next.js - Tailwind CSS](https://tailwindcss.com/docs/guides/nextjs)
+
+## Get Started
+
+```bash
+npm install -D tailwindcss postcss autoprefixer
+```
+
+1. `tailwindcss` `postcss` `autoprefixer` 를 설치한다.
+2. tailwind의 `config` 파일을 명령어를 통해 생성해준다.
+
+   ```bash
+   npx tailwindcss init -p
+   ```
+
+3. `config` 파일에 `content`부분에 `path`를 설정해준다.
+
+   ```jsx
+   /** @type {import('tailwindcss').Config} */
+   module.exports = {
+     content: [
+   		'./pages/**/*.{js,ts,jsx,tsx}', <- 추가
+   		'./components/**/*.{js,ts,jsx,tsx}' <- 추가
+   	],
+     theme: {
+       extend: {},
+     },
+     plugins: [],
+   };
+   ```
+
+4. `global.css`에 아래 코드를 추가한다.
+
+   ```css
+   //global.css
+
+   @tailwind base;
+   @tailwind components;
+   @tailwind utilities;
+   ```
+
+5. 테스트 해보자!
+
+   ```jsx
+   export default function Home() {
+     return <h1 className="text-3xl font-bold underline">Hello world!</h1>;
+   }
+   ```
+
+   ![잘 작동한다.](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/06605cb1-d11e-4213-8e67-e189241a1488/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230111%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230111T084230Z&X-Amz-Expires=86400&X-Amz-Signature=b5b789841f5c7cf6183ebb4f23c71960d770070c0b1a36430b6b8f02b3ffafad&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+
+   잘 작동한다.
+
+# 5. 그 외에 더 할게 있나요?
+
+1. 절대경로 설정을 추가해준다. import/export 시에 경로를 깔끔하게 작성할 수 있다.
+
+   ```json
+   //tsconfig.json
+
+   {
+     "compilerOptions": {
+   		"baseUrl": ".", <- 추가
+       //...기존의 옵션들
+     },
+     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+     "exclude": ["node_modules"]
+   }
+   ```
+
+   ```jsx
+   //before
+   import { foo } from '../../components/bar';
+
+   //after
+   import { foo } fom 'components/bar';
+
+   ```
+
+2. `eslint config`에 아래 `rules`는 기본적으로 추가해주는걸 추천한다.
+
+   ```json
+   //.eslintrc
+
+   {
+     "rules": {
+       "react/react-in-jsx-scope": "off", //jsx파일에서 React를 import 하지 않아도 됨.
+       "no-unused-vars": "off", //타입스크립트 사용시 interface의 변수명을 eslint가 잡지 않도록 함.
+       "@typescript-eslint/no-unused-vars": "warn" //대신 사용하지 않는 변수는 @typescript/eslint를 통해 잡아줌.
+     }
+   }
+   ```
+
+3. tailwind 관련 확장을 설치해주자. 자동완성을 사용할수 있다.
+
+   ![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/bcddc06d-3dee-425b-bb7c-48c9e4ad82db/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230110%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230110T171737Z&X-Amz-Expires=86400&X-Amz-Signature=b680be78f922d112dbe9db3668dfce82f75389ad610065c8d1fbce7523fee7d1&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+
+4. 필요없는 boilerplate는 삭제해준다.
