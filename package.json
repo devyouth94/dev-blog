@@ -22,6 +22,7 @@
     "next-themes": "^0.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-type-animation": "^2.1.2",
     "rehype-autolink-headings": "^6.1.1",
     "rehype-code-titles": "^1.1.0",
     "rehype-highlight": "^6.0.0",

@@ -3,6 +3,7 @@ import { allPosts, Post } from 'contentlayer/generated';
 import PageTitle from 'components/PageTitle';
 import PostsContainer from 'components/PostsContainer';
 import ArrowNav from 'components/ArrowNav';
+import IndexProfile from 'components/IndexProfile';
 
 export const getStaticProps: GetStaticProps = async () => {
   const MAX_DISPLAY = 5;
@@ -22,6 +23,8 @@ type Props = {
 const Home = ({ posts }: Props) => {
   return (
     <>
+      <IndexProfile />
+
       <PageTitle title="Recent Post" />
 
       <PostsContainer posts={posts} />
