@@ -2,9 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* tailwind css */
 @layer components {
   .gradient-title {
-    @apply duration-150 hover:text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-pink-600;
+    @apply duration-150 hover:text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-blue-500;
   }
 
   .scroll-button {
@@ -20,6 +21,7 @@
   }
 }
 
+/* global css */
 body {
   padding: 0;
   cursor: default;
@@ -36,6 +38,7 @@ body::-webkit-scrollbar-thumb {
   border-radius: 0.25rem;
 }
 
+/* code block css */
 .hljs-keyword,
 .hljs-tag {
   color: #9bdafa;
@@ -62,4 +65,25 @@ body::-webkit-scrollbar-thumb {
 
 .hljs-comment {
   color: #aaa;
+}
+
+.post-underline {
+  position: relative;
+}
+
+.post-underline::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 9px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  background: #f87315;
+  z-index: -1;
+}
+
+.post-title:hover .post-underline::after {
+  width: 100%;
+  transition: width 0.3s;
 }

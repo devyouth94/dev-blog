@@ -12,11 +12,13 @@ type Props = {
 
 const PostsCard = ({ date, title, tags, summary, slug }: Props) => {
   return (
-    <li className="flex flex-col items-start py-10 w-full">
+    <li className="flex flex-col gap-1 items-start py-10 w-full">
       <time className="text-sm text-gray-400">{dateFormat(date)}</time>
 
-      <h2 className="text-2xl font-bold hover:underline">
-        <Link href={`/blog/${slug}`}>{title}</Link>
+      <h2 className="text-2xl font-bold post-title">
+        <Link href={`/blog/${slug}`} className="post-underline">
+          {title}
+        </Link>
       </h2>
 
       <article>
