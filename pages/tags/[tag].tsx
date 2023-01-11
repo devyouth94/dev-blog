@@ -1,3 +1,4 @@
+import ArrowNav from 'components/ArrowNav';
 import PageTitle from 'components/PageTitle';
 import PostsContainer from 'components/PostsContainer';
 import SearchContainer from 'components/SearchContainer';
@@ -42,6 +43,8 @@ const TagResult = ({ posts, tag }: { posts: Post[]; tag: string }) => {
       <SearchContainer handleInputChange={handleInputChange} />
 
       <PostsContainer posts={searchedPosts} />
+
+      <ArrowNav href="/tags" text="← 모든 태그" />
     </>
   );
 };

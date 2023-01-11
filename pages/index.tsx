@@ -2,7 +2,7 @@ import { GetStaticProps } from 'next';
 import { allPosts, Post } from 'contentlayer/generated';
 import PageTitle from 'components/PageTitle';
 import PostsContainer from 'components/PostsContainer';
-import Link from 'next/link';
+import ArrowNav from 'components/ArrowNav';
 
 export const getStaticProps: GetStaticProps = async () => {
   const MAX_DISPLAY = 5;
@@ -26,14 +26,7 @@ const Home = ({ posts }: Props) => {
 
       <PostsContainer posts={posts} />
 
-      <div className="flex justify-end py-5">
-        <Link
-          href="/blog"
-          className="text-orange-500 hover:text-orange-600 hover:underline dark:hover:text-orange-400"
-        >
-          모든 포스트 &rarr;
-        </Link>
-      </div>
+      <ArrowNav href="/blog" text="모든 포스트 →" />
     </>
   );
 };
