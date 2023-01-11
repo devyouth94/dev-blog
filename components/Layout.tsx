@@ -14,7 +14,7 @@ type Props = {
 
 const Layout = ({ children }: Props) => {
   return (
-    <div className="mx-auto max-w-3xl px-4 xl:max-w-5xl xl:px-0">
+    <div className="mx-auto max-w-3xl px-5">
       <div className="flex h-screen flex-col justify-between">
         <header className="flex items-center justify-between py-10">
           <Link href="/" className="text-2xl font-bold">
@@ -40,19 +40,19 @@ const Layout = ({ children }: Props) => {
 
         <main className="mb-auto">{children}</main>
 
-        <footer className="flex flex-col items-center py-10">
-          <div className="flex gap-5 mb-3 text-sm font-semibold underline">
+        <footer className="flex flex-col items-center py-10 text-sm">
+          <div className="flex gap-5 mb-3  font-semibold underline">
             <Social socialName="EMAIL" href={`mailto:${METADATA.social.email}`} />
             <Social socialName="GitHub" href={METADATA.social.github} />
             <Social socialName="NotionWiki" href={METADATA.social.notion} />
           </div>
 
-          <div className="mb-4 text-gray-400">
+          <div className="mb-3  text-gray-400">
             <span>{`${METADATA.author} • © ${new Date().getFullYear()} • `}</span>
             <Link href="/">{METADATA.meta.title}</Link>
           </div>
 
-          <div className="text-sm text-gray-400">
+          <div className=" text-gray-400 hover:underline">
             <a href="https://github.com/devyouth94/dev-blog">GitHub Repository</a>
           </div>
         </footer>
