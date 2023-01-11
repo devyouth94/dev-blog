@@ -29,7 +29,7 @@ const Tags = ({ tags }: { tags: Tags }) => {
         {sortedTags.map((tag, idx) => (
           <div key={idx}>
             <TagItem tag={tag} />
-            <span className="text-sm font-semibold text-gray-500 ml-[-10px]">{`(${tags[tag]})`}</span>
+            <span className="text-sm font-semibold text-gray-500 dark:text-gray-200 ml-[-10px]">{`(${tags[tag]})`}</span>
           </div>
         ))}
       </div>
