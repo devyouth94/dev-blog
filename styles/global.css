@@ -6,8 +6,32 @@
   .gradient-title {
     @apply duration-150 hover:text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-pink-600;
   }
+
+  .scroll-button {
+    @apply rounded-full bg-stone-400 p-2 text-stone-100 transition-all hover:bg-stone-600 dark:bg-gray-400 dark:hover:bg-gray-600;
+  }
+
+  .toc-h2 {
+    @apply ml-3 pl-2 border-l border-gray-300;
+  }
+
+  .toc-h3 {
+    @apply ml-3 pl-5 border-l border-gray-300;
+  }
 }
 
 body {
+  padding: 0;
   cursor: default;
+  overflow: overlay;
+}
+
+body::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+body::-webkit-scrollbar-thumb {
+  --tw-bg-opacity: 1;
+  background-color: rgb(168 162 158 / var(--tw-bg-opacity));
+  border-radius: 0.25rem;
 }

@@ -11,6 +11,11 @@ const METADATA = {
     notion:
       'https://devyouth94.notion.site/devyouth94/YOUNGJIN-Dev-Archieve-8954348ab30b497e87437ec85c7ed7c5',
   },
+  giscus: {
+    id: 'devyouth94',
+    repo: 'dev-blog',
+    category: 'General',
+  },
 };
 
 export default METADATA;
