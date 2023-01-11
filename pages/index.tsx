@@ -22,7 +22,7 @@ type Props = {
 const Home = ({ posts }: Props) => {
   return (
     <>
-      <PageTitle title="최신 포스트" />
+      <PageTitle title="Recent Post" />
 
       <PostsContainer posts={posts} />
 
