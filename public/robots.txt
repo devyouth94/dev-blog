@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://youth-dev-log.vercel.app/
+
+# Sitemaps
+Sitemap: https://youth-dev-log.vercel.app/sitemap.xml
