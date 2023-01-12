@@ -1,8 +1,10 @@
 import PageTitle from 'components/PageTitle';
 import TagItem from 'components/TagItem';
+import METADATA from 'constants/METADATA';
 import { allPosts } from 'contentlayer/generated';
 import getAllTags from 'lib/utils/getAllTags';
 import { GetStaticProps } from 'next';
+import { NextSeo } from 'next-seo';
 
 type Tags = {
   [x: string]: number;
@@ -23,6 +25,12 @@ const Tags = ({ tags }: { tags: Tags }) => {
 
   return (
     <>
+      <NextSeo
+        title="Tags"
+        canonical={`${METADATA.meta.url}/tags`}
+        openGraph={{ url: `${METADATA.meta.url}/tags` }}
+      />
+
       <PageTitle title="Tags" desc="포스트를 태그별로 확인하세요." />
 
       <div className="flex flex-wrap gap-5 justify-center mx-auto max-w-lg mt-5">

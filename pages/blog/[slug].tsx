@@ -6,6 +6,8 @@ import ScrollButton from 'components/ScrollButton';
 import TagItem from 'components/TagItem';
 import GiscusContainer from 'components/GiscusContainer';
 import Toc from 'components/Toc';
+import { NextSeo } from 'next-seo';
+import METADATA from 'constants/METADATA';
 
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
@@ -28,27 +30,43 @@ const BlogPost = ({ post }: { post: Post }) => {
   const MDXComponent = useMDXComponent(post.body.code);
 
   return (
-    <div className="relative">
-      <header className="flex flex-col items-center pb-14">
-        <time className="text-gray-400 mb-4">{dateFormat(post.date)}</time>
-        <h2 className="text-4xl text-center font-extrabold mb-4">{post.title}</h2>
-        <article>
-          {post.tags.map((tag, idx) => (
-            <TagItem key={idx} tag={tag} />
-          ))}
-        </article>
-      </header>
+    <>
+      <NextSeo
+        title={post.title}
+        description={post.summary}
+        canonical={`${METADATA.meta.url}/blog/${post.slug}`}
+        openGraph={{
+          type: 'article',
+          url: `${METADATA.meta.url}/blog/${post.slug}`,
+          article: {
+            publishedTime: new Date(post.date).toISOString(),
+            tags: [...post.tags, 'frontend', '프론트엔드', 'develop', '개발'],
+          },
+        }}
+      />
 
-      <Toc />
+      <div className="relative">
+        <header className="flex flex-col items-center pb-14">
+          <time className="text-gray-400 mb-4">{dateFormat(post.date)}</time>
+          <h2 className="text-4xl text-center font-extrabold mb-4">{post.title}</h2>
+          <article>
+            {post.tags.map((tag, idx) => (
+              <TagItem key={idx} tag={tag} />
+            ))}
+          </article>
+        </header>
 
-      <section className="prose prose-neutral max-w-none dark:prose-invert py-14 border-y">
-        <MDXComponent />
-      </section>
+        <Toc />
 
-      <GiscusContainer />
+        <section className="prose prose-neutral max-w-none dark:prose-invert py-14 border-y">
+          <MDXComponent />
+        </section>
 
-      <ScrollButton />
-    </div>
+        <GiscusContainer />
+
+        <ScrollButton />
+      </div>
+    </>
   );
 };
 

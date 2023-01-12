@@ -4,6 +4,8 @@ import SearchContainer from 'components/SearchContainer';
 import { allPosts, Post } from 'contentlayer/generated';
 import useSearchValue from 'lib/hooks/useSearchValue';
 import { GetStaticProps } from 'next';
+import { NextSeo } from 'next-seo';
+import METADATA from 'constants/METADATA';
 
 export const getStaticProps: GetStaticProps = async () => {
   const posts = allPosts.sort((a, b) => Number(new Date(b.date)) - Number(new Date(a.date)));
@@ -29,6 +31,12 @@ const Blog = ({ posts }: Props) => {
 
   return (
     <>
+      <NextSeo
+        title="Blog"
+        canonical={`${METADATA.meta.url}/blog`}
+        openGraph={{ url: `${METADATA.meta.url}/blog` }}
+      />
+
       <PageTitle title="Blog" desc="개발 관련 공유하고 싶은 내용을 포스팅합니다." />
 
       <SearchContainer handleInputChange={handleInputChange} />
