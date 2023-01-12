@@ -23,6 +23,7 @@
   - next-sitemap: 사이트맵을 만들어주는 라이브러리
   - next-theme: 다크모드를 간편하게 적용할 수 있는 라이브러리
   - react-type-animation: 타이핑 효과를 간단하게 적용할 수 있는 라이브러리
+  - react-rewards: confetti 효과를 간단하게 적용할 수 있는 라이브러리
   - rehype, remark: mdx <-> html 변환 라이브러리
 
 ## 주요기능
