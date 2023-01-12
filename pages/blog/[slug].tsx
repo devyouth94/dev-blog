@@ -58,7 +58,7 @@ const BlogPost = ({ post }: { post: Post }) => {
 
         <Toc />
 
-        <section className="prose prose-neutral max-w-none dark:prose-invert py-14 border-y">
+        <section className="prose prose-neutral prose-h1:pt-8 prose-h2:mt-0 max-w-none dark:prose-invert py-14 border-y">
           <MDXComponent />
         </section>
 
