@@ -19,9 +19,9 @@ npx create-next-app .
 
 - create-next-app 을 사용하여 next.js를 설치한다. 참고로 경로를 `.` 으로 설정하면 현재 디렉토리 내부에 설치하게 된다.
 - 친절하게 프로젝트에 타입스크립트를 사용할거냐고 물어봐준다. 타입스크립트를 사용할 예정이므로 Yes에 두고 `enter` 키를 누르면 된다. 필요한 패키지들을 알아서 설치해준다.
-  ![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/0a40d0b7-926a-4c6d-ae62-25176da6406e/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230111%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230111T084059Z&X-Amz-Expires=86400&X-Amz-Signature=1d5d31a0df998b68223f278a9d72b6f4f00fa4594d9d533adc4428710711eeee&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+  <img src="/posts/nextjs-starter/1.png" />
 - ESLint를 사용할거냐고도 물어보니 필요하다면 꼭 Yes를 선택해주자.
-  ![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/df14ad9a-63f3-4718-8762-7e666766e657/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230111%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230111T084121Z&X-Amz-Expires=86400&X-Amz-Signature=b47e1afc049bd8a40675846f0c17b1505d62161cc1656d6b39f1b46f34cf357f&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+  <img src="/posts/nextjs-starter/2.png" />
 
 # 2. ESLint 설정하기
 
@@ -38,11 +38,11 @@ npx eslint --init
 ```
 
 - Next 설치시 `eslint` 초기 설정은 아래와 같다. 위의 명령어를 사용하면 더 자세한 초기 설정을 간편하게 할수 있다.
-  ![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/1e924ad7-8207-454b-83eb-90e4fbdc43a7/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230111%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230111T084140Z&X-Amz-Expires=86400&X-Amz-Signature=0c29198bec2f1f63adf87dc44cb7e468c845df67fa0a665eb05a5cca3effb8c9&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+  <img src="/posts/nextjs-starter/3.png" />
 - 명령어 사용시 `CNA` 를 사용했을때 처럼 각자의 프로젝트에 맞춰서 선택할수 있는 선택지가 주어진다.
-  ![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/fbc52987-279b-4a08-8f80-b96f6e994721/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230111%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230111T084153Z&X-Amz-Expires=86400&X-Amz-Signature=cf01d1f2a183d171f63b10e765aa23798d022957ef90052c8346e2b4e1b2449f&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+  <img src="/posts/nextjs-starter/4.png" />
 - 설정이 잘 완료되었다. 추가로 env에 `"node": true` 를 추가해준다. 추가해주지 않으면 이후에 `CommonJS` 모듈을 사용할수 없다.
-  ![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/ebfc496c-b3fd-4c92-a2a5-717a08d3e0f6/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230111%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230111T084203Z&X-Amz-Expires=86400&X-Amz-Signature=4d8ef59ed4b8189c3735115278ba7f19d01b6b761095e95e27392b4510d6ec2d&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+  <img src="/posts/nextjs-starter/5.png" />
 
 # 3. Prettier 설치 및 설정하기
 
@@ -137,7 +137,7 @@ npm install -D tailwindcss postcss autoprefixer
    }
    ```
 
-   ![잘 작동한다.](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/06605cb1-d11e-4213-8e67-e189241a1488/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230111%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230111T084230Z&X-Amz-Expires=86400&X-Amz-Signature=b5b789841f5c7cf6183ebb4f23c71960d770070c0b1a36430b6b8f02b3ffafad&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+   <img src="/posts/nextjs-starter/6.png" />
 
    잘 작동한다.
 
@@ -183,6 +183,6 @@ npm install -D tailwindcss postcss autoprefixer
 
 3. tailwind 관련 확장을 설치해주자. 자동완성을 사용할수 있다.
 
-   ![Untitled](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/bcddc06d-3dee-425b-bb7c-48c9e4ad82db/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230112%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230112T084643Z&X-Amz-Expires=86400&X-Amz-Signature=7091a7ca79cac50220f6ddef8df24ec253da48f97a7a7767ee5040a14beacc5c&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+   <img src="/posts/nextjs-starter/7.png" />
 
 4. 필요없는 boilerplate는 삭제해준다.
