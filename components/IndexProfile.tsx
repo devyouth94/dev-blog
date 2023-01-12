@@ -14,9 +14,9 @@ const IndexProfile = () => {
           className="text-xl sm:text-3xl font-bold"
         />
         <p className="mt-3 font-sm leading-7 text-neutral-500 dark:text-neutral-200 post-title">
-          <span className="post-underline">
+          <span className="post-underline underline">
             <a href={METADATA.social.notion} target="_blank" rel="noreferrer">
-              개인 노션
+              노션
             </a>
           </span>
           에 기록한 개발 관련 내용 중에
