@@ -1,22 +1,22 @@
-// import { useEffect } from 'react';
+import { useEffect } from 'react';
 import METADATA from 'constants/METADATA';
 import Image from 'next/image';
 import { TypeAnimation } from 'react-type-animation';
-// import { useReward } from 'react-rewards';
+import { useReward } from 'react-rewards';
 
 const IndexProfile = () => {
-  // const { reward, isAnimating } = useReward('rewardId', 'confetti', {
-  //   angle: 200,
-  //   position: 'absolute',
-  //   startVelocity: 20,
-  //   spread: 90,
-  //   elementCount: 80,
-  //   lifetime: 150,
-  // });
+  const { reward, isAnimating } = useReward('rewardId', 'confetti', {
+    angle: 200,
+    position: 'absolute',
+    startVelocity: 20,
+    spread: 90,
+    elementCount: 80,
+    lifetime: 150,
+  });
 
-  // useEffect(() => {
-  //   reward();
-  // }, []);
+  useEffect(() => {
+    reward();
+  }, []);
 
   return (
     <div className="grid grid-cols-[auto_120px] sm:grid-cols-[auto_180px] mb-5">
@@ -42,12 +42,12 @@ const IndexProfile = () => {
 
       <div
         className="relative h-[120px] sm:h-[180px] cursor-pointer"
-        // onClick={isAnimating ? undefined : reward}
+        onClick={isAnimating ? undefined : reward}
       >
         <Image src="/images/mimoji.png" fill alt="mimoji" />
-        {/* <div className="absolute top-[100px] left-[-20px]">
+        <div className="absolute top-[100px] left-[-20px]">
           <span id="rewardId" />
-        </div> */}
+        </div>
       </div>
     </div>
   );
