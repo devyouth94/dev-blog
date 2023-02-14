@@ -1,0 +1,88 @@
+---
+title: 모바일에서 100vh 적용하기
+date: 2022-10-05
+summary: 모바일 환경에선 100vh가 제대로 작동하지 않는다. 어떻게 해야할까?
+tags: ['react', 'css']
+---
+
+# 겪은 문제
+
+PC환경과 개발자 도구의 'device toolbar'에서 잘 작동하던 `height: 100vh`가 모바일에선 저를 배신하고야 말았습니다. 이유인 즉슨, **모바일 환경의 웹 브라우저에 존재하는 상단 메뉴와 하단 메뉴때문에 실제 뷰포트의 사이즈가 작아졌기 때문**입니다.
+
+이걸 고려하지 않고 100vh로 작업한 뷰들은 죄다 필요없는 스크롤이 생기고, 하단에 맞춰서 위치한 컴포넌트들이 메뉴바에 가려지는 불상사가 발생했습니다.
+
+# 해결 방안
+
+뷰포트의 실제 높이를 계산하는 로직이 필요하고, 뷰포트의 높이가 바뀌었을 때 높이를 재계산 해주는 로직도 필요했습니다.
+
+# 해결
+
+## 우선 실시간으로 변하는 높이 구하기
+
+- 상위 파일인 app.js에 뷰포트의 높이를 계산해주는 로직을 추가했습니다. 아래 코드를 첨부하고 이어서 설명하겠습니다.
+
+  ```jsx
+  //app.js
+
+  const [vh, setVh] = useState(window.innerHeight * 0.01);
+  //ex) window.innerHeight = 875px
+  //ex) vh = 8.75px
+  ```
+
+- 우선 뷰포트의 높이를 담을 state를 생성하고 0.01를 곱한 값을 state에 set 해줍니다.
+
+  ```jsx
+  //app.js
+
+  import _ from 'lodash';
+
+  const [vh, setVh] = useState(window.innerHeight * 0.01);
+  const screenSize = useCallback(
+    _.debounce(() => {
+      setVh(window.innerHeight * 0.01);
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }, 100),
+    [vh],
+  );
+
+  useEffect(() => {
+    screenSize();
+    window.addEventListener('resize', screenSize);
+
+    return () => window.removeEventListener('resize', screenSize);
+  }, [screenSize]);
+  ```
+
+- 이후 screenSize라는 함수를 생성하고 vh를 set 해주는 코드와 --vh에 vh값을 넣어줄 코드도 추가합니다.
+- useEffect 의존성 배열에 함수를 넣기 위해 useCallback으로 함수를 감싸주고, 추가로 너무 많은 이벤트 발생을 방지하기 위해 lodash의 debounce도 사용합니다.
+- useEffect 내부에서 screenSize 함수를 호출하고 resize 이벤트에 screenSize 함수를 추가합니다. 그리고 의존성 배열에도 함수를 추가해줍니다.
+  <img src="/posts/applying-100vh-on-mobile/1.png" />
+  <img src="/posts/applying-100vh-on-mobile/2.png" />
+- 이제 resize 이벤트가 발생하면 screenSize 함수가 실행되고, vh가 실시간으로 변경됩니다.
+
+## 그래서 실시간으로 변경되는 vh를 어떻게 적용하나요?
+
+```jsx
+//Component.js
+
+import styled from 'styled-components';
+
+const Component = () => {
+  return <StDiv>예시 컴포넌트</StDiv>;
+};
+
+export default Component;
+
+const StDiv = styled.div`
+  width: 100%;
+  height: calc(var(--vh, 1vh) * 100);
+`;
+```
+
+- 각자 프로젝트에서 적용할 컴포넌트에 height를 `height: calc(var(--vh, 1vh) * 100);` 이렇게 작성하면 적용됩니다.
+- 저는 프로젝트에 styled-components를 사용했기 때문에 이렇게 사용했습니다.
+
+# 주의사항
+
+- 똑같이 따라해도 작동은 하지만 컴포넌트 안에 값이 바뀌지 않아도, 리사이즈 이벤트가 일어나면 컴포넌트가 불필요하게 재렌더링 됩니다.
+- 최적화에 대한 고민이 더 필요할 것 같습니다.
