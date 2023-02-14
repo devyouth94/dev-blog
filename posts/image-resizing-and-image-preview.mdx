@@ -1,0 +1,120 @@
+---
+title: 이미지 리사이징과 이미지 미리보기 구현하기
+date: 2022-10-09
+summary: 라이브러리를 사용하여 미지 업로드시 용량을 최소화 해보자. 그리고 이미지 미리보기도 구현해보자.
+tags: ['react', 'browser-image-compression']
+---
+
+# 이미지 리사이징하기
+
+## 겪은 문제
+
+- 클라이언트에서 유저가 업로드한 이미지를 서버로 보내는 로직을 구현하고 있었습니다.
+- 서버에서 트래픽 부하 방지를 위해 파일 사이즈 제한을 1MB로 두었고, 그 이상의 용량을 가진 이미지는 용량이 크다는 에러메세지를 보냈습니다.
+
+## 해결 방안
+
+- 유저가 매번 사진의 용량을 확인하면서 보낼순 없으니, 클라이언트에서 이미지를 1MB 이하로 리사이징 하여 서버로 보내는 로직이 필요했습니다.
+
+## 해결
+
+```jsx
+//Write.js
+import imageCompression from 'browser-image-compression';
+
+const Write = () => {
+  const [image, setImage] = useState();
+
+  const fileHandler = (event) => {
+    const [file] = event.target.files;
+
+    imageCompression(file, {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+    }).then((compressedFile) => {
+      const newFile = new File([compressedFile], file.name, { type: file.type });
+      setImage(newFile);
+    });
+  };
+
+  return <input type="file" accept="image/*" onChange={(event) => fileHandler(event)} />;
+};
+
+export default Write;
+```
+
+1. input의 `onChange`이벤트에 파일을 받을 수 있는 함수를 작성합니다. 이후 비구조화 할당을 통해 `event.target.files`를 `file` 변수에 할당합니다. 아래는 `console.log(file)`의 값입니다.
+   <img src="/posts/image-resizing-and-image-preview/1.png" />
+2. `browser-image-compression` 라이브러리를 사용하여 지정한 옵션값으로 파일을 리사이징 합니다. 이후 리사이징된 파일을 `compressedFile` 이라는 이름의 인자로 받습니다. 아래는 `console.log(compressedFile)`의 값입니다. `346kb`로 리사이징이 잘 됐네요!
+   <img src="/posts/image-resizing-and-image-preview/2.png" />
+3. **리사이징 한 이미지를 보니 `File`이 `Blob`의 타입으로 바뀌었습니다.**
+   다시 `File` 의 형태로 변환해 줍시다. `new File()`을 선언하고
+   첫번째 인자에 리사이징 된 파일을 배열에 담아 넣어줍니다.
+   그리고 두번째 인자에 파일의 이름(`file.name`)을 넣고
+   마지막 인자에 파일의 타입(`{type: file.type}`)을 넣어줍니다.
+   아래는 `console.log(newFile)`의 값입니다. 다시 `File`의 형태로 잘 바뀌었습니다.
+   <img src="/posts/image-resizing-and-image-preview/3.png" />
+4. `setState`로 `state`에 리사이징이 완료된 파일을 넣어줍니다. 혹은 각자의 프로젝트에 맞게 서버로 파일을 보내는 로직을 써도 무방합니다.
+
+# 이미지 미리보기
+
+- 업로드한 이미지가 잘 올라갔는지, 올리고 싶은 파일을 제대로 올렸는지 확인하려면 미리보기가 필요할것 같습니다. 추가해봅시다!!
+
+## 해결
+
+```jsx
+//Write.js
+import imageCompression from 'browser-image-compression';
+
+const Write = () => {
+  const [image, setImage] = useState();
+
+  //미리보기 이미지의 base64값을 담을 state
+  const [previewImg, setPreviewImg] = useState();
+
+  //이미지 미리보기
+  const encodeFile = (file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    return new Promise((resolve) => {
+      reader.onload = () => {
+        setPreviewImg(reader.result);
+        resolve();
+      };
+    });
+  };
+
+  const fileHandler = (event) => {
+    const [file] = event.target.files;
+
+    imageCompression(file, {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+    }).then((compressedFile) => {
+      const newFile = new File([compressedFile], file.name, { type: file.type });
+
+      //미리보기 관련 함수 추가
+      encodeFile(newFile);
+      setImage(newFile);
+    });
+  };
+
+  return (
+    <>
+      <img src={previewImg} />
+      <input type="file" accept="image/*" onChange={(event) => fileHandler(event)} />
+    </>
+  );
+};
+
+export default Write;
+```
+
+1. 미리보기 이미지의 base64값을 담을 state를 생성합니다.
+2. 리사이징 된 `newFile`을 미리보기 로직 함수인 `encodeFile()`의 인자로 넣어줍니다.
+3. 미리보기 로직 함수(`encodeFile()`)를 만들어줍니다.
+   3-1. 새로운 `FileReader()`를 만들어 변수`reader` 에 넣어줍니다.
+   3-2. `FileReader.readAsDataURL()`은 인자로 받은 파일을 `base64`로 인코딩한 뒤 인코딩 된 문자열을 `reader.result`에 담아줍니다.
+   3-3. `FileReader.onload()`는 로직이 성공했을때 작동합니다. `setPreviewImg`에 `reader.result`를 담아줍시다.
+4. `<img/>` 이미지 태그의 `src`값에 `previewImg`를 넣어줍니다.
+5. 화면에 미리보기가 잘 출력되는지 확인해 봅시다!
