@@ -1,0 +1,72 @@
+---
+title: 코드 스플리팅을 적용해보자
+date: 2022-10-05
+summary: 리액트 환경에서 코드 스플리팅을 적용하여 최적화를 하면 어떤 효과가 있을까?
+tags: ['react', '최적화', 'lazy', 'suspense']
+---
+
+# 겪은 문제
+
+프로젝트의 사이즈가 커질수록 사이트 초기 로딩 속도가 느려진다는 글을 봤었습니다. 현재 우리 팀의 프로젝트 규모가 작아 작업을 진행해도 눈에 띄게 로딩 속도가 느려지진 않았지만 코드 스플리팅을 통해 유의미한 성과를 얻어낼 수 있는지 테스트를 해보고 싶었습니다.
+
+> 코드 스플리팅(code splitting)이란?
+> 자바스크립트로 개발을 하다보면, 하나의 번들 파일에 모든 로직이 들어가게 됩니다. 규모가 커질수록 파일 용량도 커지고, 인터넷 환경이 느리다면 페이지 로딩 속도도 느려질 것입니다.
+> 코드 스플리팅을 하게 되면 지금 당장 필요하지 않은 코드는 분리 시키고, 나중에 필요할 때 불러와서 사용할 수 있습니다.
+>
+> [velopert - 리액트 프로젝트 코드 스플리팅 정복하기](https://velog.io/@velopert/react-code-splitting)
+
+# 해결 방안
+
+코드 스플리팅에는 몇가지 방법이 있습니다.
+
+1. 동적 import를 컴포넌트에 직접 구현하기
+2. lazy & suspense
+3. lodable library
+
+각각의 방법이 어떻게 진행되는지는 천천히 알아보고, 이번에는 2번째 방법인 `lazy`와 `suspense`를 사용해 구현해보려고 합니다.
+
+# 해결
+
+- `lazy` 함수를 사용하면 동적 import를 사용해서 컴포넌트를 렌더링할 수 있습니다.
+
+  ```jsx
+  //Before
+  import Main from '../pages/Main';
+
+  //After
+  const Main = lazy(() => import('../pages/Main'));
+  ```
+
+- `lazy` 컴포넌트는 `Suspense` 컴포넌트 하위에서 렌더링되어야 하며, `Suspense`는 `lazy` 컴포넌트가 로드되길 기다리는 동안 로딩 화면을 렌더링해줍니다.
+  ```jsx
+  <Suspense fallback={<Loading />}>
+    <Main />
+  </Suspense>
+  ```
+
+> 리액트 공식 문서에서는 라우트 파일에서 코드 스플리팅을 하기를 권장합니다. 웹 페이지를 불러오는 시간은 페이지 전환에 어느 정도 발생하며 대부분 페이지를 한번에 렌더링하기 때문에 사용자가 페이지를 렌더링하는 동안 다른 요소와 상호작용하지 않습니다.
+
+- 저희 프로젝트에서도 router.js 파일에 코드 스플리팅을 적용하였습니다.
+  <img src="/posts/code-splitting-with-lazy-and-suspense/1.png" />
+
+# 결과
+
+- 코드 스플리팅 적용 후, 수치들이 어떻게 변화했는지 한번 비교해보겠습니다.
+  <img src="/posts/code-splitting-with-lazy-and-suspense/2.png" />
+- 하나의 번들로 초기에 한번에 로딩됨을 알 수 있습니다.
+  <img src="/posts/code-splitting-with-lazy-and-suspense/3.png" />
+- 적용 후에는 초기에 불러져 오는 번들이 훨씬 작아졌음을 알 수 있습니다. 코드 스플리팅을 통해 번들이 잘 나뉘어졌습니다. 다만 lodash 라이브러리는 최적화할 필요가 있어보입니다.
+  <img src="/posts/code-splitting-with-lazy-and-suspense/4.png" />
+- 코드 스플리팅 전에도 수치들이 나쁘진 않아보입니다.
+  <img src="/posts/code-splitting-with-lazy-and-suspense/5.png" />
+- 오히려 더 느려진 수치도 있지만 전체적인 LightHouse 점수는 크게 올랐습니다.
+  <img src="/posts/code-splitting-with-lazy-and-suspense/6.png" />
+- 적용전 수치입니다.
+  <img src="/posts/code-splitting-with-lazy-and-suspense/7.png" />
+- load 시간이 미미하지만 조금은 빨라졌습니다.
+
+# 마무리
+
+- 적용 후 비교까지 해봤는데, 매번 다르게 값들이 나오므로 정확하게 비교는 힘든것 같습니다. 하지만 코드 스플리팅이 하는 역할이 무엇인지, 번들, 동적 import 등을 찾아보는 좋은 시간이었습니다.
+
+> 다만 코드 스플리팅 적용 시, 컴포넌트 깜빡임 문제가 생겼습니다. 이에 대한 최적화는 필요할 것으로 보입니다.
