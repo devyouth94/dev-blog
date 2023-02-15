@@ -2,7 +2,7 @@ const METADATA = {
   headerTitle: `<dev.log/>;`,
   repo: 'https://github.com/devyouth94/dev-blog',
   meta: {
-    url: 'https://youth-dev-log.vercel.app/',
+    url: 'https://youth-dev-log.vercel.app',
     title: `youngzin's <dev.log/>;`,
     description: '개발 관련 글을 남깁니다.',
   },
