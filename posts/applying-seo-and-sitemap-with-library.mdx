@@ -1,0 +1,239 @@
+---
+title: Next.js환경에서 SEO와 SITEMAP을 쉽게 적용해보자.
+date: 2023-02-08
+summary: SEO와 SITEMAP이 뭔지 알아보고, Next에서 라이브러리를 이용하여 쉽게 적용하는 방법도 알아보자.
+tags: ['Next.js', 'seo', 'sitemap', 'next seo', 'next sitemap']
+---
+
+# SEO
+
+SEO(Search Engine Optimization)은 검색 엔진 최적화이다. 사용자가 검색 엔진에서 특정 키워드를 검색하면 상위 노출된 페이지를 먼저 열람하게 된다. 이때 웹사이트 또는 웹페이지의 상위 노출도를 높이는 작업이 SEO 작업이다.
+
+## 장단점
+
+검색엔진 최적화는 유료 광고와 달리 집행 비용이 들지 않는다. 이는 엄청난 장점이 될 수 있는데, 여러 이유에 따라 노출도가 달라질 수도 있고 최적화의 기간이 오래 소요될 수 있다는 점은 단점으로 작용한다.
+
+## 검색엔진 최적화는 어떻게 할 수 있을까?
+
+### 메타 태그
+
+메타 태그는 웹페이지를 검색 엔진에 검색했을 때 노출되는 컨텐츠이다.
+
+- **<title> 태그**
+  타이틀 태그는 노출되는 제목이다. 단순히 검색 결과에만 노출되는 것이 아니라, 브라우저 탭 상에도 노출되므로 아주 중요하다.
+- **<description> 태그**
+  타이틀 만큼이나 중요한 디스크립션 태그는 쉽게 말해서 웹페이지의 설명을 한 두줄로 요약한 문장이다. 유저들은 이 디스크립션을 보고 내가 찾던 정보인지 아닌지 판단하므로 최대한 잘 읽히게 문장으로 작성하는게 중요하다.
+
+### 오픈 그래프 태그
+
+오픈 그래프 태그는 웹페이지의 링크가 카카오톡이나 기타 SNS에 공유될 때 어떻게 노출될지 정의해주는 역할을 한다. 효과적으로 공유되는 장점이 있고, 얼마나 공유되고 있는지 판단하는 기준이 되어 검색 상위 노출을 위한 품질 평가에도 영향을 준다.
+
+- **og:title** - 제목
+- **og:description** - 상세 설명
+- **og:image** - 카드 섬네일
+
+# Sitemap
+
+`sitemap.xml` 은 웹사이트 내 모든 페이지의 목록을 나열한 파일이다. 책의 목차와 비슷한 역할이라고 보면 된다. 사이트맵을 제출하면 일반적인 크롤링 과정에서 발견되지 않는 웹페이지도 문제없이 크롤링 될 수 있다.
+
+## 사이트맵이 SEO에 주는 영향은?
+
+파일을 생성했다고 해서 웹사이트 SEO에 큰 영향을 주는 것은 아니다. 다만 크롤링 과정에서 발견되지 않는 웹페이지에 대한 정보도 제공해주기 때문에 더 많은 페이지가 크롤링되고, 이는 긍정적인 영향을 끼친다.
+
+## 사이트맵 XML 태그 살펴보기
+
+- 현재 나의 블로그 sitemap은 이런 형태로 돼있다.
+  ```xml
+  <?xml version="1.0" encoding="UTF-8"?>
+  <urlset
+  	xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  	xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+  	xmlns:xhtml="http://www.w3.org/1999/xhtml"
+  	xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0"
+  	xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+  	xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
+  >
+  	<url>
+  		<loc>https://youth-dev-log.vercel.app</loc>
+  		<lastmod>2023-02-14T15:40:49.792Z</lastmod>
+  		<changefreq>daily</changefreq>
+  		<priority>0.7</priority>
+  	</url>
+  	<url>...</url>
+  	<url>...</url>
+  	<url>...</url>
+  </urlset>
+  ```
+  - `loc`: 페이지의 URL. 해당 URL은 http 같은 프로토콜로 시작해야 하며 웹서버에 따라 슬래시로 끝나야 한다.
+  - `lastmod`: 파일을 마지막으로 수정한 날짜.
+  - `changefreq`: 페이지가 변경되는 빈도. 검색 엔진 크롤러에게 정보를 제공하지만 명령은 아니다.
+  - `priority`: URL의 상대적 우선 순위이다. 다른 사이트와 관련없이 오로지 나의 사이트 안에서 한정이다. 기본 우선 순위는 0.5이다.
+
+## robots.txt는 뭘까?
+
+`robots.txt` 는 웹사이트에 대한 검색엔진 로봇들의 접근을 조절해주고 제어해주는 역할을 한다.
+
+### robots.txt 설정
+
+루트 디렉토리에 위치해야 검색 로봇이 찾을 수 있다.
+
+```
+//robots.txt
+
+User-agent: *
+Allow: /
+```
+
+위와 같이 설정하면 모든 웹 크롤러가 웹사이트의 모든 콘텐츠에 접근 가능함을 의미한다.
+
+```
+//robots.txt
+
+User-agent: Googlebot
+Disallow: /blog
+```
+
+위와 같이 설정하면 구글의 검색 로봇만 크롤링을 허용하고, /blog 디렉토리 내의 접근은 차단한다는 뜻이다.
+
+**이제 nextjs에서 라이브러리를 사용하여 seo와 sitemap을 적용해보자.**
+
+# NEXT-SEO
+
+next-seo는 nextjs 환경에서 더 쉽게 SEO를 관리할 수 있게 도와주는 라이브러리이다.
+
+## 공식문서
+
+[https://github.com/garmeeh/next-seo](https://github.com/garmeeh/next-seo)
+
+## 설치
+
+```bash
+npm install next-seo
+```
+
+## 기본적인 사용법
+
+- Default SEO 를 통해 모든 페이지에서 사용할 수 있는 공통 SEO를 설정할 수 있다.
+
+  - 루트 디렉토리에 `next-seo-config.ts` 파일을 만들고 아래처럼 SEO 설정 값을 작성한다.
+
+    ```tsx
+    //next-seo-config.ts
+
+    import METADATA from 'constants/METADATA';
+    import { DefaultSeoProps } from 'next-seo';
+
+    const DEFAULT_SEO: DefaultSeoProps = {
+      titleTemplate: `%s | ${METADATA.headerTitle}`,
+      defaultTitle: METADATA.meta.title,
+      description: METADATA.meta.description,
+      canonical: METADATA.meta.url,
+      openGraph: {
+        type: 'website',
+        locale: 'ko_KR',
+        url: METADATA.meta.url,
+        siteName: METADATA.meta.title,
+        images: [
+          {
+            url: `${METADATA.meta.url}/images/og_image.png`,
+            width: 850,
+            height: 600,
+            alt: METADATA.headerTitle,
+          },
+        ],
+      },
+    };
+
+    export default DEFAULT_SEO;
+    ```
+
+  - 그리고 `_app.tsx` 파일에 `DefaultSeo`를 불러오면 된다.
+
+    ```tsx
+    //_app.tsx
+
+    import { DefaultSeo } from 'next-seo';
+    import DEFAULT_SEO from 'next-seo-config';
+
+    export default function App({ Component, pageProps }: AppProps) {
+      return (
+        <>
+          <DefaultSeo {...DEFAULT_SEO} />
+          <Component {...pageProps} />
+        </>
+      );
+    }
+    ```
+
+- 이후 페이지 별로 SEO를 설정할 땐 NextSeo를 import하여 설정해주면 된다.
+
+  - 필요한 설정만 추가해주면 된다.
+
+    ```tsx
+    //pages/blog/index.tsx
+
+    import { NextSeo } from 'next-seo';
+    import METADATA from 'constants/METADATA';
+
+    const Blog = ({ posts }: Props) => {
+      return (
+        <>
+          <NextSeo
+            title="Blog"
+            canonical={`${METADATA.meta.url}/blog`}
+            openGraph={{ url: `${METADATA.meta.url}/blog` }}
+          />
+
+          <PageTitle title="Blog" desc="개발 관련 공유하고 싶은 내용을 포스팅합니다." />
+
+          <SearchContainer handleInputChange={handleInputChange} />
+
+          <PostsContainer posts={searchedPosts} />
+        </>
+      );
+    };
+    ```
+
+이 외에도, 아주 다양한 기능들이 있으니 공식 문서를 읽어보고 각자 프로젝트에 잘 적용해보면 된다!
+
+# NEXT-SITEMAP
+
+next-sitemap은 `sitemap.xml` 파일과 `robots.txt` 파일을 손쉽게 generate해주는 라이브러리이다.
+
+## 공식문서
+
+[https://github.com/iamvishnusankar/next-sitemap](https://github.com/iamvishnusankar/next-sitemap)
+
+## 설치
+
+```bash
+npm install next-sitemap
+```
+
+## 기본적인 사용법
+
+- 루트 디렉토리에 `next-sitemap.config.js`를 만들고 아래 코드를 작성한다. siteUrl에는 본인 사이트의 url을 작성해주면 된다.
+  ```jsx
+  /** @type {import('next-sitemap').IConfig} */
+  module.exports = {
+    siteUrl: process.env.SITE_URL || 'https://example.com',
+    generateRobotsTxt: true, // (optional)
+    // ...other options
+  };
+  ```
+- `package.json` 파일 `script` 부분에 `postbuild`를 추가해준다.
+  ```json
+  {
+    "build": "next build",
+    "postbuild": "next-sitemap"
+  }
+  ```
+- `npm run build`로 빌드를 작동하고 나면 `public`폴더에 `sitemap.xml`과 `robots.txt`파일이 생성된걸 확인할 수 있다.
+
+# References
+
+[검색엔진 최적화(SEO)란? | 요즘IT](https://yozm.wishket.com/magazine/detail/1540/)
+
+[Robots.txt와 Sitemap.xml 알아보기](https://www.twinword.co.kr/blog/basic-technical-seo/)
+
+[sitemaps.org – 프로토콜](https://www.sitemaps.org/ko/protocol.html)
