@@ -1,6 +1,6 @@
 ---
 title: Zustand를 사용해서 전역으로 모달 관리 하기
-date: 2022-2-28
+date: 2023-2-28
 summary: 전역 상태 관리 라이브러리를 사용하여 모달 관리를 좀 더 효율적으로 해보자.
 tags: ['react', 'zustand', 'modal']
 ---
@@ -30,6 +30,7 @@ zustand는 redux-toolkit과 같은 flux패턴으로 관리하면서도 그에 �
 # Store 코드
 
 - 각 모달의 상태 값과 상태 값을 바꾸는 토글 함수를 만들어 사용하면 된다.
+
   ```tsx
   import { create } from 'zustand';
 
@@ -71,6 +72,7 @@ zustand는 redux-toolkit과 같은 flux패턴으로 관리하면서도 그에 �
 # Component 코드
 
 - 필요한 `store`의 상태 값과 토글 함수를 `import` 해서 사용한다.
+
   ```tsx
   import { useModalActions, useNicknameModalState } from '@/store/useModalStore';
 
@@ -91,6 +93,7 @@ zustand는 redux-toolkit과 같은 flux패턴으로 관리하면서도 그에 �
 
   export default NicknameModal;
   ```
+
   - 모달의 오픈 여부를 `store`의 `boolean` 값으로 판단하고, 모달이 열리거나 닫히는 버튼을 눌렀을때 `changeModalState` 함수를 사용한다.
 
 # 비반응적 방식으로 store 값에 접근하기
@@ -98,6 +101,7 @@ zustand는 redux-toolkit과 같은 flux패턴으로 관리하면서도 그에 �
 - 버튼을 누르는 것처럼 반응이 필요한 경우에는 store의 값이 바로 반영됐지만, useEffect 함수 내에서 컴포넌트가 렌더링 됐을 때 토글 함수를 사용해서 값을 바꾸려고 하면 store의 값이 최신화가 되지 않는 문제가 있었다. 이 문제의 해결법 또한 공식 홈페이지에서 찾아 볼수 있다.
   [GitHub - pmndrs/zustand: 🐻 Bear necessities for state management in React](https://github.com/pmndrs/zustand#readingwriting-state-and-reacting-to-changes-outside-of-components)
 - 나 같은 경우에는 소셜 로그인 외에 이메일 로그인을 선택한 유저들은 초기 닉네임 값이 `null`이었기 때문에, 닉네임이 없다면 먼저 닉네임을 설정해달라는 모달을 제공해야 했다.
+
   ```tsx
   import { useEffect } from 'react';
   import { useSession } from 'next-auth/react';
@@ -126,5 +130,6 @@ zustand는 redux-toolkit과 같은 flux패턴으로 관리하면서도 그에 �
 
   export default NullNickname;
   ```
+
   - 컴포넌트가 렌더링 되면 `userData`에 접근하여 닉네임이 없으면 닉네임 모달의 상태를 `true`로 변경해주는 코드를 작성했다.
   - 이런 형태로 `setState` 함수를 사용하면 비반응적으로 바뀐 값도 최신의 값을 사용할 수 있다.
