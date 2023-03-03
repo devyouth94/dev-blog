@@ -1,0 +1,130 @@
+---
+title: Zustand를 사용해서 전역으로 모달 관리 하기
+date: 2022-2-28
+summary: 전역 상태 관리 라이브러리를 사용하여 모달 관리를 좀 더 효율적으로 해보자.
+tags: ['react', 'zustand', 'modal']
+---
+
+# 개요
+
+작업을 하다보면 사용자들에게 모달을 제공해야 하는 일들이 있다. 그리고 모달의 상태를 바꿔주는 토글 버튼이 자식 컴포넌트에 있는 경우도 잦은 편이다. 이때 모달의 상태를 부모 컴포넌트에서 관리하고 토글 함수를 props로 내려주는 식으로 작업을 했었는데, 이 방법에서 아쉬운 점이 몇가지 있었다.
+
+관리해야 하는 토글이 많아지면서 부모 컴포넌트에서 모달 상태를 관리하고 내려줘야 하는 토글 함수들이 많아지면서 단일 책임에서 벗어나기 시작했다. 모달의 상태는 따로 관심사를 나눠야 한다는 필요성이 느껴졌다.
+
+그래서 모달의 상태와 토글 함수를 분리하여 관리해야 한다고 판단했고 가벼운 전역 상태 관리 라이브러리를 선택했다.
+
+## zustand
+
+zustand는 redux-toolkit과 같은 flux패턴으로 관리하면서도 그에 비해 용량은 엄청 가볍다. 이번 목표에 부합하는 라이브러리이다.
+
+### zustand 홈페이지
+
+[GitHub - pmndrs/zustand: 🐻 Bear necessities for state management in React](https://github.com/pmndrs/zustand)
+
+### zustand 잘 사용하기
+
+[Working with Zustand](https://hyunjinee.notion.site/Working-with-Zustand-73c2d6bbb53d4c6e9944ddc5e23706a1)
+
+두 링크만 잘 읽어봐도 zustand의 기본 기능은 확인할 수 있다!
+
+# Store 코드
+
+- 각 모달의 상태 값과 상태 값을 바꾸는 토글 함수를 만들어 사용하면 된다.
+  ```tsx
+  import { create } from 'zustand';
+
+  type Type = 'nickname' | 'profileImg' | 'setting' | 'write';
+
+  interface ModalState {
+    nickname: boolean;
+    profileImg: boolean;
+    setting: boolean;
+    write: boolean;
+    actions: {
+      changeModalState: (type: Type) => void;
+    };
+  }
+
+  const useModalStore = create<ModalState>((set) => ({
+    nickname: false,
+    profileImg: false,
+    setting: false,
+    write: false,
+    actions: {
+      changeModalState: (type) => {
+        set((state) => ({ ...state, [type]: !state[type] }));
+      },
+    },
+  }));
+
+  export default useModalStore;
+
+  export const useModalActions = () => useModalStore((state) => state.actions);
+
+  export const useNicknameModalState = () => useModalStore((state) => state.nickname);
+  export const useProfileImgModalState = () => useModalStore((state) => state.profileImg);
+
+  export const useSettingDrawerState = () => useModalStore((state) => state.setting);
+  export const useWriteDrawerState = () => useModalStore((state) => state.write);
+  ```
+
+# Component 코드
+
+- 필요한 `store`의 상태 값과 토글 함수를 `import` 해서 사용한다.
+  ```tsx
+  import { useModalActions, useNicknameModalState } from '@/store/useModalStore';
+
+  const NicknameModal = ({ nickname, description }: Props) => {
+    const nicknameModal = useNicknameModalState();
+    const { changeModalState } = useModalActions();
+
+    const handleClose = () => {
+      changeModalState('nickname');
+    };
+
+    return (
+      <Modal isCentered isOpen={nicknameModal} onClose={handleClose}>
+        {/* Modal Contents... */}
+      </Modal>
+    );
+  };
+
+  export default NicknameModal;
+  ```
+  - 모달의 오픈 여부를 `store`의 `boolean` 값으로 판단하고, 모달이 열리거나 닫히는 버튼을 눌렀을때 `changeModalState` 함수를 사용한다.
+
+# 비반응적 방식으로 store 값에 접근하기
+
+- 버튼을 누르는 것처럼 반응이 필요한 경우에는 store의 값이 바로 반영됐지만, useEffect 함수 내에서 컴포넌트가 렌더링 됐을 때 토글 함수를 사용해서 값을 바꾸려고 하면 store의 값이 최신화가 되지 않는 문제가 있었다. 이 문제의 해결법 또한 공식 홈페이지에서 찾아 볼수 있다.
+  [GitHub - pmndrs/zustand: 🐻 Bear necessities for state management in React](https://github.com/pmndrs/zustand#readingwriting-state-and-reacting-to-changes-outside-of-components)
+- 나 같은 경우에는 소셜 로그인 외에 이메일 로그인을 선택한 유저들은 초기 닉네임 값이 `null`이었기 때문에, 닉네임이 없다면 먼저 닉네임을 설정해달라는 모달을 제공해야 했다.
+  ```tsx
+  import { useEffect } from 'react';
+  import { useSession } from 'next-auth/react';
+
+  import NicknameModal from '@/components/common/NicknameModal';
+
+  import useModalStore from '@/store/useModalStore';
+
+  const NullNickname = () => {
+    const { data: userData } = useSession();
+
+    useEffect(() => {
+      if (userData && !userData.user?.name) {
+        useModalStore.setState({ nickname: true });
+      }
+    }, []);
+
+    return (
+      <>
+        {userData && (
+          <NicknameModal nickname="" description="닉네임이 없네요! 닉네임을 먼저 설정해주세요." />
+        )}
+      </>
+    );
+  };
+
+  export default NullNickname;
+  ```
+  - 컴포넌트가 렌더링 되면 `userData`에 접근하여 닉네임이 없으면 닉네임 모달의 상태를 `true`로 변경해주는 코드를 작성했다.
+  - 이런 형태로 `setState` 함수를 사용하면 비반응적으로 바뀐 값도 최신의 값을 사용할 수 있다.
