@@ -1,6 +1,6 @@
 ---
 title: Zustand를 사용해서 전역으로 모달 관리 하기
-date: 2023-2-28
+date: 2023-02-28
 summary: 전역 상태 관리 라이브러리를 사용하여 모달 관리를 좀 더 효율적으로 해보자.
 tags: ['react', 'zustand', 'modal']
 ---
@@ -31,7 +31,7 @@ zustand는 redux-toolkit과 같은 flux패턴으로 관리하면서도 그에 �
 
 - 각 모달의 상태 값과 상태 값을 바꾸는 토글 함수를 만들어 사용하면 된다.
 
-  ```tsx
+  ```jsx
   import { create } from 'zustand';
 
   type Type = 'nickname' | 'profileImg' | 'setting' | 'write';
@@ -42,21 +42,24 @@ zustand는 redux-toolkit과 같은 flux패턴으로 관리하면서도 그에 �
     setting: boolean;
     write: boolean;
     actions: {
-      changeModalState: (type: Type) => void;
+      changeModalState: (type: Type) => void,
     };
   }
 
-  const useModalStore = create<ModalState>((set) => ({
-    nickname: false,
-    profileImg: false,
-    setting: false,
-    write: false,
-    actions: {
-      changeModalState: (type) => {
-        set((state) => ({ ...state, [type]: !state[type] }));
+  const useModalStore =
+    create <
+    ModalState >
+    ((set) => ({
+      nickname: false,
+      profileImg: false,
+      setting: false,
+      write: false,
+      actions: {
+        changeModalState: (type) => {
+          set((state) => ({ ...state, [type]: !state[type] }));
+        },
       },
-    },
-  }));
+    }));
 
   export default useModalStore;
 
@@ -73,7 +76,7 @@ zustand는 redux-toolkit과 같은 flux패턴으로 관리하면서도 그에 �
 
 - 필요한 `store`의 상태 값과 토글 함수를 `import` 해서 사용한다.
 
-  ```tsx
+  ```jsx
   import { useModalActions, useNicknameModalState } from '@/store/useModalStore';
 
   const NicknameModal = ({ nickname, description }: Props) => {
@@ -102,7 +105,7 @@ zustand는 redux-toolkit과 같은 flux패턴으로 관리하면서도 그에 �
   [GitHub - pmndrs/zustand: Bear necessities for state management in React](https://github.com/pmndrs/zustand#readingwriting-state-and-reacting-to-changes-outside-of-components)
 - 나 같은 경우에는 소셜 로그인 외에 이메일 로그인을 선택한 유저들은 초기 닉네임 값이 `null`이었기 때문에, 닉네임이 없다면 먼저 닉네임을 설정해달라는 모달을 제공해야 했다.
 
-  ```tsx
+  ```jsx
   import { useEffect } from 'react';
   import { useSession } from 'next-auth/react';
 
