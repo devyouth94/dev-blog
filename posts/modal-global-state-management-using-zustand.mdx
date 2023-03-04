@@ -31,7 +31,7 @@ zustand는 redux-toolkit과 같은 flux패턴으로 관리하면서도 그에 �
 
 - 각 모달의 상태 값과 상태 값을 바꾸는 토글 함수를 만들어 사용하면 된다.
 
-  ```jsx
+  ```tsx
   import { create } from 'zustand';
 
   type Type = 'nickname' | 'profileImg' | 'setting' | 'write';
@@ -42,24 +42,21 @@ zustand는 redux-toolkit과 같은 flux패턴으로 관리하면서도 그에 �
     setting: boolean;
     write: boolean;
     actions: {
-      changeModalState: (type: Type) => void,
+      changeModalState: (type: Type) => void;
     };
   }
 
-  const useModalStore =
-    create <
-    ModalState >
-    ((set) => ({
-      nickname: false,
-      profileImg: false,
-      setting: false,
-      write: false,
-      actions: {
-        changeModalState: (type) => {
-          set((state) => ({ ...state, [type]: !state[type] }));
-        },
+  const useModalStore = create<ModalState>((set) => ({
+    nickname: false,
+    profileImg: false,
+    setting: false,
+    write: false,
+    actions: {
+      changeModalState: (type) => {
+        set((state) => ({ ...state, [type]: !state[type] }));
       },
-    }));
+    },
+  }));
 
   export default useModalStore;
 
