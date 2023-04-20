@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import METADATA from 'constants/METADATA';
 import Image from 'next/image';
 import { TypeAnimation } from 'react-type-animation';
 import { useReward } from 'react-rewards';
@@ -29,12 +28,7 @@ const IndexProfile = () => {
           className="text-xl sm:text-3xl font-bold"
         />
         <p className="mt-3 font-sm leading-7 text-neutral-500 dark:text-neutral-200 post-title">
-          <span className="post-underline underline">
-            <a href={METADATA.social.notion} target="_blank" rel="noreferrer">
-              노션
-            </a>
-          </span>
-          에 기록한 개발 관련 내용 중에
+          프로젝트 중에 마주한 개발 관련 내용 중에
           <br />
           공유하고 싶은 글을 다듬어 이 곳에 올립니다.
         </p>

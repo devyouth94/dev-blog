@@ -20,7 +20,6 @@ const Layout = ({ children }: Props) => {
           <div className="flex gap-5 mb-3  font-semibold underline">
             <Social socialName="Mail" href={`mailto:${METADATA.social.email}`} />
             <Social socialName="GitHub" href={METADATA.social.github} />
-            <Social socialName="Notion" href={METADATA.social.notion} />
             <Social socialName="Resume" href={METADATA.social.resume} />
           </div>
 

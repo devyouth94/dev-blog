@@ -10,9 +10,7 @@ const METADATA = {
   social: {
     email: 'devyouth94@gamil.com',
     github: 'https://github.com/devyouth94',
-    notion:
-      'https://devyouth94.notion.site/devyouth94/YOUNGJIN-Dev-Archieve-8954348ab30b497e87437ec85c7ed7c5',
-    resume: 'https://devyouth94.notion.site/devyouth94/ba8e81b71470475f91857f75171ab624',
+    resume: 'https://kimyoungzin.notion.site/68711cc1deed4ff1b7da2c0f32697315',
   },
   giscus: {
     id: 'devyouth94',
