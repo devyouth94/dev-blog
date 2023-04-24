@@ -1,0 +1,135 @@
+---
+title: Next.js13 에서 폰트 최적화하기(with local font, tailwind css)
+date: 2023-04-04
+summary: next.js 환경에서 폰트 최적화 하는 방법에 대해 알아보자.
+tags: ['next.js', 'tailwind css', 'local font']
+---
+
+# 개요
+
+next.js 13부터는 웹 폰트에 대한 최적화를 제공해주는 `@next/font` 모듈을 제공한다. Google font 및 로컬 폰트를 쉽게 추가할 수 있는데, 대표적으로 아래 2가지의 최적화를 경험할 수 있다.
+
+- 빌드 시 웹 폰트를 다운로드하여 로컬에서 제공한다. → Pre-download
+- 대체 폰트를 추가하여 선택한 웹 폰트와 최대한 유사하도록 크기를 자동으로 조절한다. → Zero Layout Shift
+
+## Pre-download
+
+기존에는 google font를 웹에서 다운로드 하는 시점이 html 파일이 로드된 후, 파일이 link하고 있는 font.googleapis.com에서 폰트를 다운로드한다.
+
+하지만 `@next/font` 에서는 빌드 타임에 미리 google font를 다운로드 하여 로컬 디렉토리에 저장해 두고, html 파일이 이 로컬 파일을 link 하도록 구현되어 있다. 이렇게 하면 전자 보다 비교적 빠르게 폰트를 로딩할 수 있다.
+
+## Layout Shift
+
+layout shift는 font-size가 동일하더라도 각각의 폰트가 기본적으로 가지고 있는 크기가 조금씩 다르기 때문에 폰트를 교체하는 과정에서 레이아웃이 밀리는 현상을 말한다. 하지만 `@next/font` 에서는 fallback font와 설정한 웹 폰트가 교체되는 과정에서 폰트 속성을 조정하여 layout shift가 발생하지 않도록 해준다.
+
+# 적용
+
+나는 프로젝트에서 local font와 tailwind css를 사용했고, 아래의 예시는 최소한의 적용 방법이다.
+
+## 1. 로컬 폰트 불러오기
+
+- src 경로를 통해 로컬 폰트를 불러오고, variable을 지정해준다.
+- 단일 글꼴에 여러 파일이 사용된다면 src는 배열 형태가 된다.
+
+  ```tsx
+  // util/fonts.ts
+
+  import localFont from 'next/font/local';
+
+  export const bebas = localFont({
+    src: '../static/fonts/BebasNeue.woff',
+    variable: '--font-bebas',
+  });
+
+  export const pretendard = localFont({
+    src: [
+      {
+        path: '../static/fonts/Pretendard-Regular.woff',
+        weight: '400',
+      },
+      {
+        path: '../static/fonts/Pretendard-Bold.woff',
+        weight: '700',
+      },
+    ],
+    variable: '--font-pretendard',
+  });
+  ```
+
+## 2. tailwind.config.js 파일에 variable 추가하기
+
+- `fontFamily` 에 위에서 선언한 variable값을 추가해준다. 이후 폰트를 적용할 때 ‘[tailwind intellisense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)’가 있다면 자동완성을 사용할 수 있다.
+
+  ```jsx
+  // tailwind.config.js
+
+  /** @type {import('tailwindcss').Config} */
+  module.exports = {
+    content: ['./src/**/*.{js,ts,jsx,tsx}'],
+    theme: {
+      extends: {
+        fontFamily: {
+          bebas: ['var(--font-bebas)'],
+          pretendard: ['var(--font-pretendard)'],
+        },
+      },
+    },
+  };
+  ```
+
+## 3. 적용할 컴포넌트에서 폰트 지정하기
+
+- `_app.tsx`파일에서 불러와 `pretendard.variable`로 html에 css 변수를 추가하고, 위에서 할당한 `font-pretendard`를 적용한다.
+
+  ```jsx
+  // _app.tsx
+
+  import type { AppProps } from 'next/app';
+  import { pretendard } from '@/util/fonts';
+
+  export default function App({ Component, pageProps }: AppProps) {
+    return (
+      <main className={`${pretendard.variable} font-pretendard`}>
+        <Component {...pageProps} />
+      </main>
+    );
+  }
+  ```
+
+- 모든 페이지에 공통으로 적용하지 않는 폰트는 특정 컴포넌트에서 불러와서 사용할 수도 있다.
+
+  ```jsx
+  // Card.tsx
+
+  import useRitual from '@/hooks/main/useGetRitual';
+  import { bebas } from '@/util/fonts';
+
+  interface CardProps {
+    count: number;
+    text: string;
+  }
+
+  const Card = ({ count, text }: CardProps) => {
+    const padCount = String(count).padStart(3, '0').split('').map(Number);
+
+    return (
+      <div>
+        <div className={`${bebas.variable} font-bebas`}>
+          {padCount.map((count, idx) => (
+            <div key={idx}>{count}</div>
+          ))}
+        </div>
+
+        <div>{text}</div>
+      </div>
+    );
+  };
+  ```
+
+# References
+
+[How @next/font works](https://blog.mathpresso.com/how-next-font-works-8bb72c2bae39)
+
+[Next.js 13에서 웹 폰트 최적화](https://dev-boku.tistory.com/entry/Nextjs-13에서-웹-폰트-최적화)
+
+[Basic Features: Font Optimization | Next.js](https://nextjs.org/docs/basic-features/font-optimization)
