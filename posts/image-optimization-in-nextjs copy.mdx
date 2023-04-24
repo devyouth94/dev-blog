@@ -1,0 +1,90 @@
+---
+title: Next.js에서 이미지 최적화하기
+date: 2023-04-03
+summary: next.js 환경에서 이미지 최적화 하는 방법에 대해 알아보자.
+tags: ['next.js', 'image', '최적화']
+---
+
+# 개요
+
+Next.js는 이미지 최적화를 위해 `@next/image` 모듈을 제공한다. 대표적인 기능으로 3가지가 있다.
+
+- Lazy Loading
+- 이미지 사이즈 최적화
+- placeholder 제공
+
+## Lazy Loading
+
+이미지 로드하는 시점을 지연시키는 기술을 의미한다. 예를 들면 스크린 밖에 있는 이미지들은 로딩을 지연시키고, 우선 스크린 안에 이미지만 빠르게 로드할 수 있도록 한다.
+
+`@next/image` 를 사용하면 자동으로 적용되기 때문에 해당 기능을 끄는 방법도 있다. 바로 `Image` 컴포넌트의 `priority`라는 `prop`을 `true`값으로 설정하면 된다. true인 경우의 이미지는 높은 우선 순위 및 사전 로드로 간주된다. 추가로 LCP요소로 감지된 모든 이미지는 이 `priority`속성을 사용해야 한다.
+
+## 이미지 사이즈 최적화
+
+`@next/image` 를 사용하면 이미지를 webp와 같은 용량이 작은 포맷으로 이미지를 변환해서 제공해준다. 이 작업은 이미지에 대한 최초 요청 시에 Next.js 서버에서 진행된다. 이후 요청은 캐시가 만료될 때까지 캐시 된 이미지가 제공되기 때문에 첫 요청보다 훨씬 빠르게 이미지가 로딩될 수 있다.
+
+## Placeholder 제공
+
+CLS 방지를 위해 `@next/image` 는 플레이스홀더를 제공한다. 이미지가 표시되기 전에도 이미지 높이만큼 영역을 표시해서 레이아웃이 흔들리는 것을 방지해준다.
+
+# 적용
+
+## 1. Image를 import하여 적용한다.
+
+- `fill`을 사용한다면 부모 태그에 `relative` 속성을 설정해야한다. 그리고 `Image`의 스타일에 `object-fit` 설정을 해주면 된다. 나는 tailwind css를 사용했다.
+- `fill`을 사용한다면 추가적으로 `sizes`값을 설정해줘야 한다. `sizes`값을 지정하지 않으면 `fill`의 기본값인 `100vw`가 이미지의 너비로 사용된다. 필요한 이미지에 비해 더 큰 이미지를 다운로드하게 되므로 꼭 이미지의 사이즈를 적용해주자.
+  ```tsx
+  // SearchBookItem.tsx
+
+  import Image from 'next/image';
+
+  const SearchBookItem = ({ item }: Props) => {
+    return (
+      <RadioGroup.Option value={item}>
+        <div className="overflow-hidden">
+          <div className="relative h-[50px] w-[50px] shrink-0">
+            {item.thumbnail && (
+              <Image
+                className="object-cover"
+                src={item.thumbnail}
+                alt="커버이미지"
+                fill
+                sizes="50px"
+                priority
+              />
+            )}
+          </div>
+        </div>
+
+        {/* 코드 생략 */}
+      </RadioGroup.Option>
+    );
+  };
+
+  export default SearchBookItem;
+  ```
+
+## 2. 외부 이미지라면 config 설정을 추가한다.
+
+- 외부 이미지의 경우 악의적인 사용자로부터 애플리케이션을 보호해야한다. 따라서 외부의 이미지를 가져올 호스트의 이름을 작성해줘야한다.
+- 나는 kakao open api에서 책의 커버 이미지를 가져와야했다. 그래서 카카오 이미지의 도메인을 적용해주었다.
+  ```jsx
+  // next.config.js
+
+  /** @type {import('next').NextConfig} */
+  const nextConfig = {
+    images: {
+      domains: ['search1.kakaocdn.net'],
+    },
+  };
+
+  module.exports = nextConfig;
+  ```
+
+# References
+
+[Next/Image를 활용한 이미지 최적화 | 카카오엔터테인먼트 FE 기술블로그](https://fe-developers.kakaoent.com/2022/220714-next-image/)
+
+[Basic Features: Image Optimization | Next.js](https://nextjs.org/docs/basic-features/image-optimization)
+
+[next/image | Next.js](https://nextjs.org/docs/api-reference/next/image#remote-patterns)
