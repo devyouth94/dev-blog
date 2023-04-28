@@ -1,0 +1,128 @@
+---
+title: 이미지에서 컬러를 추출해주는 라이브러리가 있다?
+date: 2023-04-09
+summary: 리액트환경에서 color-thief-react를 사용하는 방법과, 만날 수 있는 에러를 알아보자.
+tags: ['color thief react', 'react', 'next.js', 'library']
+---
+
+# 개요
+
+비사이드 포텐데이에서 프로젝트를 진행하면서 책 커버 이미지에서 컬러를 추출하여 사용자가 컬러를 선택할 수 있는 기능을 구현해야 했다. `리액트 이미지 컬러 추출` 등과 같은 키워드로 검색하던 중에 color-thief-react라는 감사한 라이브러리를 발견했다. **이 글은 내가 프로젝트에서 사용한 방법과 라이브러리를 쓰던 중 마주한 오류와 해결방법을 공유하고자 한다.**
+
+# color thief react
+
+- 자세한 사용방법은 npm 홈페이지를 확인하자.
+  [npm: color-thief-react](https://www.npmjs.com/package/color-thief-react)
+
+## 설치
+
+```bash
+npm install color-thief-react
+```
+
+## 기본적인 사용법
+
+```jsx
+import { usePalette } from 'color-thief-react'
+
+const { data, loading, error } = usePalette(src, colorCount, format, { crossOrigin, quality})
+
+<div style={{ color: data[0], backgroundPalette: data[1] }}>
+  Text with the predominant color
+</div>
+```
+
+- 기본적으로 리액트에서 사용할 수 있는 hook의 종류가 2가지가 있다. `useColor`는 이미지의 대표 컬러 1개를 반환하고 다른 hook인 `usePalette`는 여러가지의 컬러를 추출해 반환해준다. 이번 프로젝트에서는 여러 개의 컬러가 필요했기 때문에 `usePalette`를 사용했다.
+- 두번째 인수는 추출할 컬러의 갯수, 세번째 인수는 반환하는 컬러값의 포맷, 네번째 인수는 cross-origin관련 옵션이다.
+
+## 프로젝트 적용
+
+```tsx
+import { RadioGroup } from '@headlessui/react';
+import { usePalette } from 'color-thief-react';
+
+import { useWriteActions, useWriteState } from '@/store/useWriteStore';
+
+const CardDecoSpoide = () => {
+  const { thumbnail, backgroundColor } = useWriteState();
+
+  const { data: colorData } = usePalette(
+    thumbnail
+      ? `https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=2592000&url=${encodeURIComponent(
+          thumbnail,
+        )}`
+      : '',
+    7,
+    'hex',
+    {
+      crossOrigin: 'anonymous',
+    },
+  );
+
+  return (
+    <RadioGroup>
+      {colorData?.map((color) => (
+        <RadioGroup.Option style={{ backgroundColor: color }} />
+      ))}
+    </RadioGroup>
+  );
+};
+
+export default CardDecoSpoide;
+```
+
+**작동방식은 아래와 같다.**
+
+- 사용자가 책을 선택하면 카카오의 책검색 open api에서 책 커버 이미지의 주소를 받아온다.
+- 주소를 `usePalette`의 첫번째 인수로 넣어준다.
+- 이미지 주소와 설정한 옵션을 기반으로 컬러값을 `data`로 반환해준다.
+- 반환받은 컬러 값으로 css에 적용한다.
+
+### 적용 화면
+
+<img src="/posts/how-to-use-color-thief-react/image01.png" />
+
+‘나무’의 커버 이미지에서 성공적으로 컬러를 추출해서 사용자에게 팔레트 형식으로 제공했다.
+
+## 발생한 오류들
+
+### 컬러 data가 undefined로 뜨는 오류
+
+- 처음에 적용했을 때 반환되는 data가 undefined였다. 마땅히 브라우저 콘솔에도 오류가 뜨지 않아 여기저기 검색해보던 중 외부 도메인에서 가져오는 이미지는 `cors`처리가 필요하다는 글을 읽고, 이 [링크](https://github.com/lokesh/color-thief/issues/20)를 통해 정보를 얻어 `cors` 옵션을 `anonymous`로 추가해줬다.
+  ```tsx
+  const { data: colorData } = usePalette(thumbnail, 7, 'hex', {
+    crossOrigin: 'anonymous',
+  });
+  ```
+- 하지만 여기서 해결되지 않고, 다시 `cors`에러가 발생했다.
+
+### 여전히 cors에러가 발생하는 오류
+
+- 여전히 cors에러가 발생했고 공식 npm사이트에서도 마땅한 해결방법을 찾을 수 없었다. 대신 리액트 전용라이브러리가 아닌 의존 라이브러리 `color-thief.js`의 홈페이지에서 방법을 찾았다. 자세한 원리는 알 수 없지만 google에서 제공하는 프록시 서버로 이미지 주소를 넘기는 방식이었다. 별다른 방법이 없었기에 우선 이 방법을 해보기로 했다.
+  <img src="/posts/how-to-use-color-thief-react/image02.png" />
+- 다행히도 위의 방법을 적용하니 이미지에서 올바르게 컬러를 추출하여 반환해주었다. (감사합니다… ㅎ그흑…)
+
+  ```tsx
+  const { data: colorData } = usePalette(
+    thumbnail
+      ? `https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=2592000&url=${encodeURIComponent(
+          thumbnail,
+        )}`
+      : '',
+    7,
+    'hex',
+    {
+      crossOrigin: 'anonymous',
+    },
+  );
+
+  console.log(colorData); //['#e3ad7b', '#080639', '#5b433d'] 이런 형태로 반환한다.
+  ```
+
+# 관련 사이트
+
+[npm: color-thief-react](https://www.npmjs.com/package/color-thief-react)
+
+[Color Thief](https://lokeshdhakar.com/projects/color-thief/)
+
+[https://github.com/lokesh/color-thief/issues/20](https://github.com/lokesh/color-thief/issues/20)
