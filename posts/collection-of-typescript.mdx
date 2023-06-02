@@ -1,0 +1,325 @@
+---
+title: 타입스크립트 개념 정리
+date: 2023-05-25
+summary: 타입스크립트 이론 공부를 하면서 헷갈리는 것들을 정리해보자.
+tags: ['typescript', 'javascript']
+---
+
+# Utility Type
+
+## Exlude
+
+exlude는 union 타입에서 특정 타입을 제거할 때 사용한다. 하나의 타입부터 유니언 까지 가능하다.
+
+- 아래의 예시를 보자.
+  ```tsx
+  type T0 = Exclude<'a' | 'b' | 'c', 'a'>;
+  // type T0 = "b" | "c"
+  type T1 = Exclude<'a' | 'b' | 'c', 'a' | 'b'>;
+  // type T1 = "c"
+  type T2 = Exclude<string | number | (() => void), Function>;
+  // type T2 = string | number
+  ```
+- exclude의 동작방식은 이렇다.
+  ```tsx
+  /**
+   * Exclude from T those types that are assignable to U
+   */
+  type Exclude<T, U> = T extends U ? never : T;
+  ```
+  - 제네릭에서 사용되는 `T extends U` 라는 키워드는 ‘T가 U라는 타입인지’ 를 의미한다.
+
+## Pick
+
+pick은 객체 타입에서, 넘겨받은 키에 해당하는 키만 리턴하는 새로운 객체 타입을 만들어준다.
+
+```tsx
+interface Todo {
+  title: string;
+  description: string;
+  completed: boolean;
+}
+
+type TodoPreview = Pick<Todo, 'title' | 'completed'>;
+
+const todo: TodoPreview = {
+  title: 'Clean room',
+  completed: false,
+};
+```
+
+## Omit
+
+omit은 pick과 반대로 객체 타입에서 특정 키를 기준으로 생략하여 타입을 내려준다.
+
+```tsx
+interface Todo {
+  title: string;
+  description: string;
+  completed: boolean;
+  createdAt: number;
+}
+
+// description을 제외
+type TodoPreview = Omit<Todo, 'description'>;
+
+const todo: TodoPreview = {
+  title: 'Clean room',
+  completed: false,
+  createdAt: 1615544252770,
+};
+```
+
+## Partial
+
+partial 타입은 어떤 타입의 모든 프로퍼티를 옵셔널로 바꾸는 기능을 한다.
+
+- 두번째 인자의 타입이 `Profile`인데, `nickname`값만 전달하고 있으므로 `age` 프로퍼티가 없다는 내용의 타입 오류를 발생시킨다.
+
+  ```tsx
+  interface Profile {
+    nickname: string;
+    age: number;
+  }
+
+  const updateProfile = (prevData: Profile, updateData: Profile) => {
+    return { ...prevData, updateData };
+  };
+
+  updateProfile(prevData, { nickname: 'new Nickname' });
+  //nickname값만 전달하고 있으므로 age 프로퍼티가 없다는 내용의 타입 오류를 발생시킨다.
+  ```
+
+- `Partial<Type>` 을 사용하면 명시적으로 모든 데이터에 옵셔널을 달아주지 않아도 된다.
+
+  ```tsx
+  interface Profile {
+    nickname: string;
+    age: number;
+  }
+
+  const updateProfile = (prevData: Profile, updateData: Partial<Profile>) => {
+    return { ...prevData, updateData };
+  };
+
+  updateProfile(prevData, { nickname: 'new Nickname' });
+  ```
+
+## Required
+
+partial과는 반대로 모든 프로퍼티를 required로 바꿔 준다. 쉽게 말해 모든 옵셔널이 없는것 처럼 작동하게 한다.
+
+- required를 사용하면, 기존에 옵셔널인 `age`도 필수로 값을 넘겨야 한다.
+
+  ```tsx
+  interface Profile {
+    nickname: string;
+    age?: number;
+  }
+
+  const updateProfile = (prevData: Profile, updateData: Required<Profile>) => {
+    return { ...prevData, updateData };
+  };
+
+  updateProfile(prevData, { nickname: 'new Nickname' });
+  //nickname값만 전달하고 있으므로 age 프로퍼티가 없다는 내용의 타입 오류를 발생시킨다.
+  ```
+
+## Record
+
+Record는 키가 keys, 값이 type인 객체 형태의 타입을 정의한다. 예를 들어 `Record<string, any>` 타입은 key값에는 string 타입만 가능하고, value에는 아무 타입이나 가능하다는 뜻이다.
+
+key나 value에 union타입이 와도 무방하다.
+
+# 타입과 인터페이스
+
+- 가장 큰 차이점은 타입 앨리어스는 모든 타입에 이름을 달아줄 수 있지만, 인터페이스는 오직 객체 타입에만 가능하다는 것이다.
+- 타입 앨리어스는 새로운 프로퍼티에 열려있지 않지만, 인터페이스는 항상 열려있다.
+  - 인터페이스는 같은 이름을 다시 붙여주면 에러 없이 선언 병합의 형태로 확장된다.
+  - 타입 앨리어스는 이름이 중복되면 에러를 보여준다.
+- 인터페이스는 라이브러리에 선언된 타입의 속성을 확장하여 사용할때 유용하다.
+
+# 맵드 타입(Mapped Type)
+
+맵드 타입이란 기존에 정의되어 있는 타입을 새로운 타입으로 변환해 주는 문법을 의미한다.
+
+## 기본예제
+
+```tsx
+type Type = 'a' | 'b' | 'c';
+
+type BooleanOfType = {
+  [K in Type]: boolean;
+};
+
+/*
+아래와 같이 정의된다.
+
+type BooleanOfType = {
+	a: boolean;
+	b: boolean;
+	c: boolean;
+};
+*/
+```
+
+# 타입 연산자
+
+## keyof 연산자
+
+- keyof 연산자는 객체 타입에서 객체의 키 값들을 리터럴 유니언으로 생성해준다.
+
+  ```tsx
+  type Point = { x: number; y: number };
+
+  type P = keyof Point; //type P = "x" | "y";
+  ```
+
+## typeof 연산자
+
+- typeof 연산자는 데이터를 타입으로 변환해주는 연산자이다.
+
+  ```tsx
+  const object = {
+    a: 'a',
+    b: 'b',
+    c: 'c',
+  };
+
+  type TObject = typeof object;
+  /*
+  type TObject = {
+  	a: string;
+  	b: string;
+  	c: string;		
+  };
+  */
+  ```
+
+- 함수도 타입으로 변환이 가능하다.
+
+  ```tsx
+  const function = (num: number) => {
+  	return num.toString();
+  };
+
+  type TFunction = typeof function;
+  //type TFunction = (num: number) => string
+  ```
+
+# 타입 어설션(Type Assertion)
+
+타입 어설션은 컴파일러에게 이 타입이 특정 타입 임을 단언한다고 말하는 것과 같다. 단언된 유형이 잘못된 경우 런타임 오류가 발생할 수 있기 때문에 가능하면 타입스크립트의 타입 추론 시스템을 사용하는 것이 좋다.
+
+타입 어설션을 처리 하는 방법은 2가지가 있다.
+
+1. 앵글 브라켓`<>` 문법
+
+   ```tsx
+   let value: any = 'hello world';
+   let length: number = (<string>value).length;
+   ```
+
+2. `as` 문법
+
+   ```tsx
+   let value: any = 'hello world';
+   let length: number = (value as string).length;
+   ```
+
+두 구문은 동일하게 동작하지만, `as` 구문이 JSX 구문과 충돌할 가능성이 더 적다.
+
+# 컨스트 어설션(const Assertion)
+
+원시 타입을 `readonly literal type`으로 변경해준다. 변수 선언 앞에 `<const>`를 붙이거나, 뒤에 `as const`를 붙이면 적용된다.
+
+```tsx
+const a = {
+  x: 1,
+  y: '2',
+};
+
+/*
+type a = {
+	x: number;
+	y: string;
+};
+*/
+```
+
+```tsx
+const a = {
+  x: 1,
+  y: '2',
+} as const;
+
+const a = <const>{
+  x: 1,
+  y: '2',
+};
+
+/*
+type a = {
+	readonly x: 1;
+	readonly y: "2";
+}
+*/
+```
+
+# enum 타입
+
+- enum은 열거형 데이터 타입이다. 멤버라 불리는 명명된 값의 집합을 이루는 자료형이다. 기억하기 어려운 숫자 대신 변수 이름으로 접근 및 사용하기 위해 활용한다. 열거된 멤버는 별도의 값이 설정되지 않은 경우 0부터 시작해 증가한다.
+
+  ```tsx
+  enum Member {
+    Kim, //0
+    Lee, //1
+    Park, //2
+  }
+
+  const Leader: number = Member.Lee; //Member.Lee = 1
+  ```
+
+- 아이템에 직접 값을 할당할 수도 있다. 값이 할당되지 않았다면 이전 아이템의 값에 +1된 값이 설정된다.
+
+  ```tsx
+  enum Member {
+    Kim = 101,
+    Lee = 203,
+    Park, //203 + 1
+  }
+
+  const Leader: number = Member.Park; //Member.Park = 204
+  ```
+
+## 이넘을 사용하지 말아야하는 이유
+
+이넘은 트리 셰이킹이 되지 않는다. 트리 셰이킹이란 사용하지 않는 코드를 삭제하는 기능을 말한다. 이는 번들 크기를 줄여 페이지가 표시되는 시간을 단축할 수 있다.
+
+타입스크립트 컴파일러는 자바스크립트에 존재하지 않는 것을 구현하기 위해 즉시 실행 함수를 포함한 코드를 생성한다. 근데 Rollup과 같은 번들러는 IIFE를 사용하지 않는 코드라고 판단할 수 없어서 트리 셰이킹이 되지 않는다.
+
+대신 유니온 타입을 사용하자.
+
+# 제네릭
+
+제네릭은 클래스 또는 함수에서 사용할 타입을, 클래스나 함수를 사용할 때 결정하는 프로그래밍 기법이다.
+
+```tsx
+const getItem = <T,>(arr: T[], index: number): T => {
+  return arr[index];
+};
+
+const pushItem = <T,>(arr: T[], item: T): void => {
+  arr.push(item);
+};
+
+const ARR = ['Kim'];
+
+getItem<string>(ARR, 0); //'Kim'
+pushItem<string>(ARR, 'Lee'); //['Kim', 'Lee']
+
+/*
+아래의 예시처럼 string[]에 number를 할당하려고 하면 오류가 난다.
+pushItem<number>(ARR, 999);
+*/
+```
